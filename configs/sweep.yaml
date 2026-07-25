@@ -1,0 +1,51 @@
+# Ablations + multi-seed sweep for Track A (one-class MIL) on MIIC.
+# Read by scripts/sweep.py (no CLI args). Launch pinned to a free GPU, e.g.:
+#   CUDA_VISIBLE_DEVICES=1 uv run python scripts/sweep.py
+
+seed: 42
+smoke: false            # true -> tiny grid + few test images, to validate quickly
+limit_test: 0           # 0 = all; >0 caps test images (smoke)
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+
+extractors:
+  wrn50:
+    type: cnn
+    backbone: wide_resnet50_2
+    layers: [layer2, layer3]
+    input_size: 512
+  dinov2:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    input_size: 518
+  dinov2_domain:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    input_size: 518
+    weights: /autofs/space/crater_001/projects/micropath/semi/outputs/ssl/dinov2_domain.pth
+
+default:
+  n_images: 1000
+  patches_per_image: 256
+  coreset_size: 100000
+  top_k: 1
+  batch_size: 16
+
+grid:
+  # extractor comparison (multi-seed)
+  extractor_seeds:
+    wrn50: [0, 1, 2]
+    dinov2: [0, 1, 2, 3, 4]
+    dinov2_domain: [0, 1, 2]
+  # 1-D ablations on the dinov2 extractor (others at default)
+  ablation_seeds: [0, 1, 2]
+  n_images: [200, 500, 2000]        # 1000 covered by the extractor comparison
+  top_k: [3, 5, 10]                 # 1 covered by the extractor comparison
+  resolution: [224, 378]            # 518 covered by the extractor comparison
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/sweep

@@ -1,0 +1,27 @@
+# External-validity check: Track A (one-class, DINOv2, NO training) on MVTec-AD.
+# Same method as MIIC Track A, per category: memory bank from train/good, score
+# the test split, report image AUROC + pixel AUROC + PRO, averaged over categories.
+#   uv run python scripts/run_mvtec.py
+
+gpu: 2
+seed: 0
+root: /autofs/space/crater_001/projects/micropath/semi/MVTec
+input_size: 518          # DINOv2 ViT-S/14 -> 37x37 tokens
+batch_size: 8
+map_res: 256
+
+model:
+  type: dinov2
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+  input_size: 518
+
+memory:
+  max_images: 300        # cap normals per category (most have < 300)
+  patches_per_image: 300
+  coreset_size: 50000
+
+score:
+  top_k: 1               # max-pool: image is anomalous if its worst patch is
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/mvtec

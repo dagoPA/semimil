@@ -1,0 +1,44 @@
+# Domain self-supervised pretraining (DINO) on the MIIC normal images.
+# Adapts the winning extractor (DINOv2 ViT-S) to the IC-microscopy domain.
+# Read directly by scripts/pretrain_ssl.py (no CLI args).
+#
+# Resource policy: pin ONE idle GPU + cap its memory so the shared server is
+# never saturated. Check `nvidia-smi` before launching to pick a free gpu.
+
+seed: 42
+gpu: 1                  # physical GPU index (idle one)
+memory_fraction: 0.5    # hard cap of the 40 GB card -> ~20 GB, leaves headroom
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  limit_images: 0       # 0 = all 23,888
+  num_workers: 12
+
+crops:                  # DINO multi-crop (sizes must be multiples of 14 for ViT/14)
+  global_size: 224
+  local_size: 98
+  n_local: 6
+
+model:
+  backbone: vit_small_patch14_reg4_dinov2.lvd142m   # init from DINOv2, fine-tuned
+  out_dim: 65536
+  proj_hidden: 2048
+  bottleneck: 256
+
+train:
+  epochs: 30            # fine-tuning from DINOv2 -> few epochs adapt the domain
+  batch_size: 64        # ~12 GB peak, well under the cap
+  lr: 0.0004
+  weight_decay: 0.04
+  warmup_epochs: 10
+  base_momentum: 0.996  # EMA teacher start (-> 1.0)
+  warmup_teacher_temp: 0.04
+  teacher_temp: 0.07
+  warmup_teacher_temp_epochs: 10
+  freeze_last_layer_epochs: 1
+  grad_checkpointing: false   # memory is abundant -> off for speed
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/ssl
+  ckpt_every: 10

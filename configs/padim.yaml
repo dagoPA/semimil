@@ -1,0 +1,28 @@
+# PaDiM baseline (Defard et al., 2021) on MIIC. Per-position Gaussian +
+# Mahalanobis distance over pretrained CNN features. Read by scripts/run_padim.py.
+# Launch pinned to a free GPU: CUDA_VISIBLE_DEVICES=1 uv run python scripts/run_padim.py
+
+device: auto
+seeds: [0, 1, 2]
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+model:
+  backbone: wide_resnet50_2
+  layers: [layer2, layer3]   # concatenated -> resized to layer2 grid
+  input_size: 256            # -> 32x32 positions
+  batch_size: 16
+  n_dims: 200                # random channel subset (dim reduction)
+  n_train: 500               # normal images to fit the Gaussians (need > n_dims)
+  eps: 0.01                  # covariance regularization
+
+eval:
+  map_size: 64
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/padim

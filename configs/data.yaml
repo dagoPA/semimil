@@ -1,0 +1,19 @@
+# MIIC dataset location & layout (Huang et al., ICIP 2021).
+# Scripts read this file directly (no CLI args) for reproducibility.
+
+# Shared project space: raw data and all outputs live here.
+data_root: /autofs/space/crater_001/projects/micropath/semi
+archive_name: dataverse_files.zip
+
+# Where the extracted dataset is written.
+raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+
+# RAR bundles inside the outer zip (RAR5, "store" method -> native rarfile read).
+bundles:
+  - Anomaly_train.rar
+  - Anomaly_test.rar
+  - Inpainting_train.rar
+  - Inpainting_test.rar
+
+# Keep the intermediate .rar files after extraction (set false to reclaim space).
+keep_rar: true

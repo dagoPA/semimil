@@ -1,0 +1,53 @@
+# Cross-evaluation: Track A (one-class MIL) vs Track B (attention-MIL),
+# each scored on BOTH the real GT test and the held-out synthetic test.
+# Read directly by scripts/cross_eval.py (no CLI args).
+
+seed: 42
+device: auto
+run_name: cross_dinov2
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  # training signal
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"   # Track A memory + Track B negatives
+  pos_glob: "Inpainting_train/*_anomaly.jpg"              # Track B positives (synthetic)
+  neg_glob: "Inpainting_train/*_original.jpg"
+  n_extra_normal: 1000
+  # real GT test
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"   # <stem>_mask.jpg
+  # synthetic held-out test (paired; never used in training)
+  syn_test_pos_glob: "Inpainting_test/*_anomaly.jpg"
+  syn_test_neg_glob: "Inpainting_test/*_original.jpg"
+
+model:
+  type: dinov2
+  backbone: wide_resnet50_2
+  layers: [layer2, layer3]
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+  input_size: 518
+  batch_size: 16
+
+memory:                # Track A memory bank
+  n_images: 1000
+  patches_per_image: 256
+  coreset_size: 100000
+
+score:
+  top_k: 1             # Track A image score = mean of top-k patch distances
+
+mil:                   # Track B head
+  hidden_dim: 256
+  attn_dim: 128
+  dropout: 0.25
+
+train:                 # Track B training
+  epochs: 40
+  lr: 0.0003
+  weight_decay: 0.0001
+  bag_batch_size: 32
+  val_frac: 0.15
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/cross_eval

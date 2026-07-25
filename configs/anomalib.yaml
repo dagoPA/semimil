@@ -1,0 +1,25 @@
+# Reproduce literature baselines (FastFlow, CFA, STFPM) via anomalib on MIIC,
+# under our protocol (same test set + metrics). Read by scripts/run_anomalib.py.
+# Strengthened budget for a fair comparison: 10k normals, higher resolution,
+# more epochs. Runs in an ephemeral overlay:
+#   uv run --with anomalib --with certifi python scripts/run_anomalib.py
+
+gpu: 1
+seed: 42
+image_size: 256
+batch_size: 32
+
+data:
+  train_normal: /autofs/space/crater_001/projects/micropath/semi/outputs/anomalib_data/train_normal
+  normal_test: /autofs/space/crater_001/projects/micropath/semi/MIIC/Anomaly_test/normal_img
+  abnormal: /autofs/space/crater_001/projects/micropath/semi/MIIC/Anomaly_test/abnormal_img
+  mask: /autofs/space/crater_001/projects/micropath/semi/MIIC/Anomaly_test/abnormal_mask
+
+models: [stfpm, fastflow, cfa]
+epochs:
+  stfpm: 30
+  fastflow: 50
+  cfa: 30
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/anomalib

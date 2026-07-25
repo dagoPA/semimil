@@ -1,0 +1,103 @@
+[project]
+name = "semimil"
+version = "0.1.0"
+description = "Anomaly detection and classification of semiconductor (IC) microscopy images via Multiple-Instance Learning and unsupervised / semi-supervised deep learning (MIIC dataset)."
+readme = "README.md"
+authors = [{ name = "Dagoberto Pulido", email = "dpulido@mgh.harvard.edu" }]
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = [
+    "multiple-instance-learning",
+    "anomaly-detection",
+    "semi-supervised-learning",
+    "self-supervised-learning",
+    "semiconductor",
+    "microscopy",
+]
+
+dependencies = [
+    # --- scientific core ---
+    "numpy>=1.26",
+    "scipy>=1.11",          # reads the anomalyPosition.mat labels
+    "pandas>=2.1",
+    "pillow>=10.0",
+    "scikit-learn>=1.4",    # clustering / metrics / semi-supervised baselines
+    "scikit-image>=0.22",   # patch extraction, morphology on masks
+    "einops>=0.7",          # patch <-> bag reshaping for MIL
+    # --- deep learning ---
+    "torch>=2.2",
+    "torchvision>=0.17",
+    "timm>=1.0",            # pretrained backbones for feature extraction
+    # --- config / cli / logging (reproducibility) ---
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+    "rich>=13.7",
+    "tqdm>=4.66",
+    # --- experiment tracking / viz ---
+    "tensorboard>=2.16",
+    "matplotlib>=3.8",
+    "certifi>=2024.2",      # CA bundle for torch.hub weight downloads
+]
+
+[project.optional-dependencies]
+# Archive extraction of the raw MIIC .rar files (needs an unrar/unar/7z backend on PATH).
+data = ["rarfile>=4.2"]
+# Self-supervised domain pretraining (DINO components).
+ssl = ["lightly>=1.5"]
+# Optional cloud experiment tracking.
+tracking = ["wandb>=0.17"]
+
+[project.scripts]
+semimil = "semimil.cli:app"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "mypy>=1.10",
+    "ipykernel>=6.29",   # run notebooks against this env
+]
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.10.0"]
+build-backend = "uv_build"
+
+# ------------------------------------------------------------------------------
+# Tooling
+# ------------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "F",   # pyflakes / pycodestyle
+    "I",        # isort
+    "N",        # pep8-naming
+    "UP",       # pyupgrade
+    "B",        # bugbear
+    "SIM",      # simplify
+    "C4",       # comprehensions
+    "RUF",      # ruff-specific
+]
+# Allow common ML tensor names (X, N, C, H, W) and `import ... as F` (torch convention).
+ignore = ["N803", "N806", "N812"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["N802", "N803", "N806"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = true

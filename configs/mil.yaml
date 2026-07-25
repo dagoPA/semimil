@@ -1,0 +1,48 @@
+# Track B -- weakly-supervised attention-MIL on MIIC.
+# bag = image, instance = feature-map cell. Trained on SYNTHETIC positives
+# (Inpainting split) vs normals; evaluated on the REAL abnormal test set.
+# Read directly by scripts/train_mil.py (no CLI args) for reproducibility.
+
+seed: 42
+device: auto
+run_name: mil_dinov2
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  # positive bags: synthetic anomaly images
+  pos_glob: "Inpainting_train/*_anomaly.jpg"
+  # negative bags: the paired normals + a sample of real train normals
+  neg_glob: "Inpainting_train/*_original.jpg"
+  extra_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  n_extra_normal: 1000
+  # real test set (never seen in training)
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+model:                # feature extractor (shared with Track A / run_patchcore)
+  type: dinov2        # cnn | dinov2
+  backbone: wide_resnet50_2
+  layers: [layer2, layer3]
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+  input_size: 518     # 512 for cnn, multiple of 14 for dinov2
+  batch_size: 16      # images per feature-extraction batch
+
+mil:
+  hidden_dim: 256     # instance projection
+  attn_dim: 128       # gated-attention hidden
+  dropout: 0.25
+
+train:
+  epochs: 40
+  lr: 0.0003
+  weight_decay: 0.0001
+  bag_batch_size: 32  # bags per optimisation step
+  val_frac: 0.15      # held-out synthetic bags for model selection
+
+eval:
+  map_size: 64        # resolution for pixel-level localization metrics
+  n_viz: 6
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/mil

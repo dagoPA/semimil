@@ -1,0 +1,34 @@
+# DRAEM baseline (Zavrtanik et al., ICCV 2021) on MIIC.
+# Reconstructive + discriminative sub-networks trained on normal images with
+# synthetic anomalies. Read by scripts/run_draem.py.
+# Launch pinned to a free GPU: CUDA_VISIBLE_DEVICES=2 uv run python scripts/run_draem.py
+
+gpu: 2
+memory_fraction: 0.5
+seed: 0
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  n_train: 4000
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+model:
+  base_ch: 32
+  input_size: 256
+
+train:
+  epochs: 40
+  batch_size: 16
+  lr: 0.0002
+  num_workers: 8
+  p_anomaly: 0.5          # fraction of samples that get a synthetic anomaly
+  ssim_weight: 1.0
+
+eval:
+  map_size: 64
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/draem

@@ -1,0 +1,47 @@
+# Track A -- one-class MIL (PatchCore-style) on MIIC.
+# Read directly by scripts/run_patchcore.py (no CLI args) for reproducibility.
+
+seed: 42
+device: auto            # auto -> cuda if available else cpu
+run_name: dinov2_domain # output subdir + label; switch with model.type below
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"   # <stem>_mask.jpg
+
+model:
+  type: dinov2                # cnn (WRN50, run_name=wrn50, input_size=512)
+                              # | dinov2 (input_size must be a multiple of 14)
+  # --- cnn (PatchCore) ---
+  backbone: wide_resnet50_2   # ImageNet-pretrained; multi-scale layer2+layer3
+  layers: [layer2, layer3]
+  # --- dinov2 ---
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m   # ViT-S/14, 37x37 tokens @518
+  weights: /autofs/space/crater_001/projects/micropath/semi/outputs/ssl/dinov2_domain.pth  # domain-adapted
+  # --- shared ---
+  input_size: 518             # 512 for cnn, 518 (=14*37) for dinov2
+  batch_size: 16
+
+memory:
+  n_images: 1000            # random normal images used to build the bank
+  patches_per_image: 256    # random feature locations kept per image
+  coreset_size: 100000      # final memory-bank size (random subsample, v1)
+
+score:
+  top_k: 1                  # image score = mean of top-k patch distances (1 = max)
+  gaussian_sigma: 4.0       # smoothing of the upsampled anomaly map (localization)
+
+eval:
+  map_size: 64              # resolution for pixel-level metrics
+  n_viz: 8                  # localization figures to save
+
+plot:
+  n_top: 3            # highest-scoring abnormals (clear detections)
+  n_bottom: 3         # lowest-scoring abnormals (hard cases / failures)
+  overlay_alpha: 0.5
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/patchcore

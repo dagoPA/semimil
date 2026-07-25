@@ -1,0 +1,28 @@
+# Controlled test of the "best checkpoint selected on the test set" protocol.
+# Reference [14] (Barusco et al., 2025) uses anomalib's DEFAULT split, i.e.
+# val_split_mode=FROM_TEST, ratio=0.5 -> half the test (with real anomalies)
+# becomes a validation set used to save the best model. We replicate the effect
+# by validating on the FULL test every epoch (same_as_test) and recording the
+# per-epoch image AUROC, so we can report LAST-epoch (leakage-free) vs BEST-epoch
+# (their-style selection). Everything else matches configs/anomalib.yaml so the
+# ONLY new variable is epoch selection.
+#   uv run --with anomalib --with certifi python scripts/anomalib_epochsel.py
+
+gpu: 0
+seed: 42
+
+data:
+  train_normal: /autofs/space/crater_001/projects/micropath/semi/outputs/anomalib_data/train_normal
+  normal_test: /autofs/space/crater_001/projects/micropath/semi/MIIC/Anomaly_test/normal_img
+  abnormal: /autofs/space/crater_001/projects/micropath/semi/MIIC/Anomaly_test/abnormal_img
+  mask: /autofs/space/crater_001/projects/micropath/semi/MIIC/Anomaly_test/abnormal_mask
+
+batch_size: 32
+models: [stfpm, fastflow, cfa]
+epochs:
+  stfpm: 30
+  fastflow: 50
+  cfa: 30
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/anomalib_epochsel
