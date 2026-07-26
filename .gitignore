@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Paper-writing scripts (kept local; not part of the reproducible analysis)
+scripts/build_paper.py
+scripts/lookup_dois.py

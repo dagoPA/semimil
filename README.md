@@ -111,8 +111,7 @@ Each result maps to one script + one config (`uv run python scripts/<x>.py`):
 | Bootstrap CIs | `bootstrap_ci.py` | — |
 | Localization (pixel AUROC + PRO) | `localization.py`, `localization_anomalib.py` | — |
 | **MVTec AD generalization** | `run_mvtec.py` | `mvtec.yaml` |
-| Figures | `plot_sankey.py`, `plot_comparison.py`, `plot_ranking.py`, `plot_epochsel.py` | — |
-| Paper build / DOI lookup | `build_paper.py`, `lookup_dois.py` | — |
+| Figures | `plot_sankey.py`, `plot_comparison.py`, `plot_ranking.py`, `plot_epochsel.py`, `plot_graphical_abstract.py` | — |
 
 > **Paths.** Configs point to the shared project space
 > (`/autofs/space/crater_001/projects/micropath/semi`) for data and outputs;
