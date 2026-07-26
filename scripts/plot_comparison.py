@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-"""Side-by-side qualitative comparison of Track A and Track B on the same images.
+"""Side-by-side qualitative comparison of the one-class detector and attention-MIL.
 
-Columns: original | ground truth (red contour) | Track A one-class map |
-Track B attention map. Rows span the range of Track B confidence (top = detected,
+Columns: original | ground truth (red contour) | one-class detector map |
+attention-MIL map. Rows span the range of attention-MIL confidence (top = detected,
 bottom = missed) so the contrast between the two methods is visible.
 
 Reproducible & argument-free: reads ``configs/cross_eval.yaml``.
@@ -127,7 +127,7 @@ def main() -> None:
     print("[eval] scoring abnormals ...")
     Fa, grid = precompute(abn, extractor, size, bs)
     probs, attn = predict(model, Fa, device)
-    # cherry-pick: largest defects that Track B detects -> both methods localize cleanly
+    # cherry-pick: largest defects the attention-MIL detects -> both localize cleanly
     areas = np.array([load_mask(mask_dir / f"{p.stem}_mask.jpg", 64).mean() for p in abn])
     detected = np.where(probs >= 0.5)[0]
     picks = list(detected[np.argsort(areas[detected])[::-1]][:N_TOP])
@@ -135,7 +135,7 @@ def main() -> None:
     print("[plot] rendering ...")
     n = len(picks)
     fig, axes = plt.subplots(n, 4, figsize=(12, 3.05 * n))
-    cols = ["original", "ground truth", "Track A · one-class", "Track B · attention"]
+    cols = ["original", "ground truth", "detector one-class", "MIL · atención"]
     for j, c in enumerate(cols):
         axes[0, j].set_title(c, fontsize=12)
     for r, k in enumerate(picks):
@@ -155,13 +155,13 @@ def main() -> None:
         axes[r, 3].imshow(b_map, cmap="jet", alpha=0.5)
         tag = "detecta" if probs[k] >= 0.5 else "FALLA"
         axes[r, 0].set_ylabel(
-            f"{pth.name}\ndefecto {mask.mean() * 100:.2f}%\nB: {tag} (p={probs[k]:.2f})", fontsize=8
+            f"{pth.name}\ndefecto {mask.mean() * 100:.2f}%\nMIL: {tag} (p={probs[k]:.2f})", fontsize=8
         )
         for j in range(4):
             axes[r, j].set_xticks([])
             axes[r, j].set_yticks([])
     fig.suptitle(
-        "Track A (one-class) vs Track B (attention-MIL) sobre los mismos defectos reales", y=1.0
+        "Detector one-class vs. MIL con atención sobre los mismos defectos reales", y=1.0
     )
     fig.tight_layout()
     out = ASSETS / "comparison.png"
