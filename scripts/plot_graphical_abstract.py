@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """Graphical abstract for IEEE Latin America Transactions (illustrated pipeline).
 
-Wide banner (>=1328x531 px, >=400 dpi) that VISUALISES the one-class MIL method:
+Wide banner (>=1328x531 px, >=400 dpi) that VISUALIZES the one-class MIL method:
 image -> patch grid (bag) -> frozen DINOv2 -> patch feature vectors -> memory bank
-with nearest-neighbour distance -> anomaly score/map -> headline results.
+with nearest-neighbor distance -> anomaly score/map -> headline results.
 
     uv run --with pillow python scripts/plot_graphical_abstract.py
 """
@@ -43,7 +43,7 @@ def arrow(ax, x0, x1, y, color=MUTED, lw=1.7):
 
 
 def feat_vector(ax, x, y0, w, cellh, vals, *, highlight=False):
-    """Draw a feature embedding as a vertical column of colour-mapped cells."""
+    """Draw a feature embedding as a vertical column of color-mapped cells."""
     cmap = plt.get_cmap("viridis")
     n = len(vals)
     for i, v in enumerate(vals):
@@ -109,7 +109,7 @@ def main() -> None:
 
     arrow(ax, 0.43, 0.475, yc)
 
-    # ---- Stage 3: memory bank + nearest-neighbour distance ----
+    # ---- Stage 3: memory bank + nearest-neighbor distance ----
     axm = fig.add_axes([0.49, 0.24, 0.155, 0.5])
     normal = rng.normal(0, 1, (60, 2)) @ [[1.0, 0.3], [0.3, 0.7]]
     axm.scatter(normal[:, 0], normal[:, 1], s=10, c=STEEL, alpha=0.55,
@@ -150,7 +150,7 @@ def main() -> None:
     ax.text(rx, 0.545, "0.972", ha="center", fontsize=20, color=RED, fontweight="bold")
     ax.text(rx, 0.41, "beats 8 baselines", ha="center", fontsize=6.8, color=INK)
     ax.text(rx, 0.352, "(DeLong · Holm)", ha="center", fontsize=5.8, color=MUTED)
-    ax.text(rx, 0.235, "generalises to", ha="center", fontsize=6.0, color=MUTED)
+    ax.text(rx, 0.235, "generalizes to", ha="center", fontsize=6.0, color=MUTED)
     ax.text(rx, 0.175, "MVTec AD 0.974", ha="center", fontsize=7.0, color=STEEL,
             fontweight="bold")
 
