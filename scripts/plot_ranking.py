@@ -4,7 +4,7 @@
 Reads the saved bootstrap + DeLong results and renders a ranked point-and-error-
 bar figure. Identity is encoded by BOTH color and marker shape (filled circle =
 our methods, open square = baselines), so it never relies on color alone; a
-reference band marks A-DINOv2's CI to show which methods overlap it.
+reference band marks the best method's CI to show which methods overlap it.
 
     uv run python scripts/plot_ranking.py
 """
@@ -27,14 +27,15 @@ STEEL = "#2f6a9c"    # baselines / literature
 INK = "#1a1c20"
 MUTED = "#566070"
 GRID = "#e4e7ec"
-REF = "A-DINOv2 (one-class)"
+REF = "DINOv2 (one-class)"
 
-OURS = {"A-DINOv2 (one-class)", "B-attn-MIL", "A-WRN50 (one-class)", "A-DINOv2-dominio"}
+OURS = {"DINOv2 (one-class)", "Attention-MIL", "WRN50 (one-class)", "DINOv2-dom (one-class)"}
 LABEL = {
-    "A-DINOv2 (one-class)": "DINOv2 · one-class  (nuestro)",
-    "B-attn-MIL": "Attention-MIL  (nuestro)",
-    "A-WRN50 (one-class)": "WRN50 · one-class  (nuestro)",
-    "A-DINOv2-dominio": "DINOv2-dominio  (nuestro)",
+    "DINOv2 (one-class)": "DINOv2 · one-class  (nuestro)",
+    "Attention-MIL": "Attention-MIL  (nuestro)",
+    "WRN50 (one-class)": "WRN50 · one-class  (nuestro)",
+    "DINOv2-dom (one-class)": "DINOv2-dominio  (nuestro)",
+    "PatchCore": "PatchCore ‡",
     "FastFlow": "FastFlow ‡",
     "PaDiM": "PaDiM",
     "STFPM": "STFPM ‡",

@@ -4,7 +4,7 @@
 Shows why the literature numbers on MIIC are optimistic: validated on the full
 test each epoch, the AUROC swings widely; the BEST epoch (selected using the test,
 as ref [14] does) reaches the reported value, while any fixed/last checkpoint sits
-well below. Our one-class A-DINOv2 (red line) matches or exceeds every peak
+well below. Our one-class DINOv2 detector (red line) matches or exceeds every peak
 WITHOUT ever using the test for model selection.
 
     uv run python scripts/plot_epochsel.py
@@ -39,7 +39,7 @@ def main() -> None:
     summary = json.loads((ES / "summary.json").read_text())
     boot = {r["method"]: r for r in
             json.loads((ROOT / "stats/bootstrap.json").read_text())["results"]}
-    ref = boot["A-DINOv2 (one-class)"]["auroc"]
+    ref = boot["DINOv2 (one-class)"]["auroc"]
 
     fig, axes = plt.subplots(1, 3, figsize=(10.2, 3.7), sharey=True)
 
@@ -97,7 +97,7 @@ def main() -> None:
         Line2D([0], [0], color=MUTED, lw=1.2, ls=(0, (5, 3)),
                label="reportado por [14]"),
         Line2D([0], [0], color=RED, lw=1.7,
-               label=f"A-DINOv2 nuestro, sin selección sobre test ({ref:.3f})"),
+               label=f"DINOv2 one-class (nuestro), sin selección sobre test ({ref:.3f})"),
         Line2D([0], [0], color=STEEL, lw=0, marker="o", ms=9, mfc=STEEL,
                mec="white", mew=1.4, label="mejor época (elegida sobre el test)"),
         Line2D([0], [0], color=STEEL, lw=0, marker="o", ms=8, mfc="white",

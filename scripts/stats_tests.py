@@ -21,17 +21,18 @@ from sklearn.metrics import roc_auc_score
 
 ROOT = Path("/autofs/space/crater_001/projects/micropath/semi/outputs")
 METHODS = {
-    "A-DINOv2 (one-class)": ROOT / "patchcore/dinov2/image_scores.csv",
-    "A-WRN50 (one-class)": ROOT / "patchcore/wrn50/image_scores.csv",
-    "A-DINOv2-dominio": ROOT / "patchcore/dinov2_domain/image_scores.csv",
-    "B-attn-MIL": ROOT / "mil/mil_dinov2/image_scores.csv",
+    "DINOv2 (one-class)": ROOT / "patchcore/dinov2/image_scores.csv",
+    "WRN50 (one-class)": ROOT / "patchcore/wrn50/image_scores.csv",
+    "DINOv2-dom (one-class)": ROOT / "patchcore/dinov2_domain/image_scores.csv",
+    "Attention-MIL": ROOT / "mil/mil_dinov2/image_scores.csv",
+    "PatchCore": ROOT / "anomalib/patchcore/image_scores.csv",
     "PaDiM": ROOT / "padim/image_scores.csv",
     "DRAEM": ROOT / "draem/image_scores.csv",
     "STFPM": ROOT / "anomalib/stfpm/image_scores.csv",
     "FastFlow": ROOT / "anomalib/fastflow/image_scores.csv",
     "CFA": ROOT / "anomalib/cfa/image_scores.csv",
 }
-REF = "A-DINOv2 (one-class)"
+REF = "DINOv2 (one-class)"
 
 
 # ---- fast DeLong ----

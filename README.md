@@ -36,7 +36,7 @@ labels, the approach supports deployable, low-waste inspection (UN SDGs 9 and 12
 
 ## Key results
 
-**Extractor dominates (Track A, one-class, no training):**
+**Extractor dominates (one-class detector, no training):**
 
 | Extractor | Image AUROC | Image AUPRC |
 |---|---|---|
@@ -48,15 +48,16 @@ DeLong+Holm vs. the best method; ‡ reproduced with anomalib):
 
 | Method | AUROC [95 % CI] | p (Holm) | reported |
 |---|---|---|---|
-| **A-DINOv2 (one-class)** | **0.972 [.953–.988]** | ref | — |
-| B-attention-MIL | 0.958 [.937–.976] | 0.20 (n.s.) | — |
-| A-WRN50 (one-class) | 0.923 [.899–.945] | <.001 | — |
+| **DINOv2 (one-class)** | **0.972 [.953–.988]** | ref | — |
+| Attention-MIL | 0.958 [.937–.976] | 0.20 (n.s.) | — |
+| WRN50 (one-class) | 0.923 [.899–.945] | <.001 | — |
 | FastFlow ‡ | 0.908 [.873–.941] | <.001 | 0.976 |
-| A-DINOv2-domain | 0.890 [.854–.922] | <.001 | — |
+| PatchCore ‡ | 0.904 [.865–.940] | <.001 | 0.933 |
+| DINOv2-domain | 0.890 [.854–.922] | <.001 | — |
 | PaDiM | 0.827 [.784–.868] | <.001 | 0.849 |
-| STFPM ‡ | 0.797 [.754–.840] | <.001 | 0.963 |
-| CFA ‡ | 0.755 [.706–.808] | <.001 | 0.990 |
-| DRAEM | 0.593 [.531–.656] | <.001 | — |
+| STFPM ‡ | 0.797 [.750–.841] | <.001 | 0.963 |
+| CFA ‡ | 0.755 [.703–.808] | <.001 | 0.990 |
+| DRAEM | 0.593 [.531–.651] | <.001 | — |
 
 **Why reproduced ≪ reported:** literature numbers use anomalib's default split,
 which keeps half the test set (with real anomalies) as a validation set to save
@@ -65,7 +66,7 @@ that selection recovers the published numbers (STFPM 0.964 vs. 0.963; FastFlow
 0.971 vs. 0.976), while our detector — which has no checkpoint to pick — leads
 without ever touching the test set.
 
-**Generalization (Track A, DINOv2, no training):**
+**Generalization (one-class detector, DINOv2, no training):**
 
 | Dataset | Image AUROC | Pixel AUROC | PRO |
 |---|---|---|---|
@@ -97,14 +98,15 @@ Each result maps to one script + one config (`uv run python scripts/<x>.py`):
 |---|---|---|
 | Extract MIIC | `extract_data.py` | `data.yaml` |
 | Data/defect-size analysis | `analyze_size.py` | — |
-| **Track A** (one-class, WRN50/DINOv2) | `run_patchcore.py` | `patchcore.yaml` |
-| **Track B** (attention-MIL) | `train_mil.py` | `mil.yaml` |
+| **One-class detector** (WRN50/DINOv2) | `run_patchcore.py` | `patchcore.yaml` |
+| **Attention-MIL** | `train_mil.py` | `mil.yaml` |
 | Cross-eval (real vs. synthetic) | `cross_eval.py` | `cross_eval.yaml` |
 | Domain SSL (negative result) | `pretrain_ssl.py` | `ssl.yaml` |
 | Multi-seed sweeps / ablations | `sweep.py` | `sweep.yaml` |
 | Baseline PaDiM | `run_padim.py` | `padim.yaml` |
 | Baseline DRAEM | `run_draem.py` | `draem.yaml` |
 | Baselines FastFlow/STFPM/CFA | `run_anomalib.py` | `anomalib.yaml` |
+| Baseline PatchCore | `run_patchcore_anomalib.py` | `anomalib.yaml` |
 | Checkpoint-on-test diagnostic | `anomalib_epochsel.py` | `anomalib_epochsel.yaml` |
 | DeLong test | `stats_tests.py` | — |
 | Holm correction | `holm.py` | — |
