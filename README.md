@@ -6,6 +6,11 @@ versus weakly-supervised Multiple-Instance Learning.**
 Dagoberto Pulido Arias · Massachusetts General Hospital / Harvard Medical School ·
 `dpulido@mgh.harvard.edu`
 
+![Graphical abstract: a bag of image patches is embedded by a frozen DINOv2
+backbone; each patch feature is scored by its distance to a memory bank of normal
+patches, giving an anomaly map and an image AUROC of 0.972 with no labels and no
+training](docs/graphical_abstract.png)
+
 Reproducible code for the paper submitted to *IEEE Latin America Transactions*.
 Every table and figure in the paper is produced by a YAML-driven script in
 [`scripts/`](scripts) reading a config in [`configs/`](configs) — no command-line
