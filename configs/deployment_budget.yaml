@@ -1,0 +1,61 @@
+# Deployment budget for the one-class detector on MIIC.
+#
+# Two questions an inspection line asks before adopting the method:
+#   (a) how many normal images does the memory bank actually need?
+#   (b) how dirty may the unlabeled "normal" pool be before the bank degrades,
+#       and does a label-free self-cleaning pass recover the loss?
+#
+# Features are extracted once and cached; every sweep point is then only a
+# nearest-neighbour search, so the whole grid runs in minutes.
+#
+# Read by scripts/deployment_budget.py (no CLI args). Pin a free GPU, e.g.:
+#   CUDA_VISIBLE_DEVICES=1 uv run python scripts/deployment_budget.py
+
+seed: 42
+device: auto
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  synthetic_glob: "Inpainting_train/*_anomaly.jpg"   # synthetic contaminants
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+
+model:                  # same frozen extractor as the main detector
+  type: dinov2
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+  input_size: 518
+  batch_size: 16
+
+detector:               # bank/scoring hyper-parameters (main-paper defaults)
+  patches_per_image: 256
+  coreset_size: 100000
+  top_k: 1
+
+pools:                  # how many images to extract once and reuse
+  n_normal: 2000        # sampling pool for the memory bank
+  n_synthetic: 500      # sampling pool for synthetic contaminants
+
+budget:                 # (a) how many normal images does the bank need?
+  # below 200 is the untested regime: the existing sweep is already flat there
+  k_images: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1000]
+  seeds: [0, 1, 2, 3, 4]
+
+contamination:          # (b) how dirty may the unlabeled pool be?
+  pool_size: 1000       # unlabeled images collected from the line
+  rates: [0.0, 0.005, 0.01, 0.02, 0.05, 0.10]
+  seeds: [0, 1, 2, 3, 4]
+  # contaminant source:
+  #   synthetic -> Inpainting anomalies (keeps the full 116-positive test set)
+  #   real      -> half of the real anomalies, held out from the test set
+  sources: [synthetic, real]
+  real_split_seed: 1234 # fixed: the real contaminant/test split must not vary
+  real_frac_contam: 0.5
+  self_clean:
+    enabled: true
+    drop_frac: 0.10     # operator drops the top-10% most anomalous, not knowing eps
+    probe_patches: 64   # patches per pool image used to score it against the bank
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/deployment_budget
+  cache_dir: /autofs/space/crater_001/projects/micropath/semi/outputs/deployment_budget/_feats

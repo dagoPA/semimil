@@ -1,0 +1,65 @@
+# Label-free operating point via split-conformal calibration.
+#
+# The paper reports threshold-free metrics (AUROC/AUPRC), but a line needs an
+# actual threshold. Split conformal turns a set of normal-only images into a
+# threshold with a finite-sample, distribution-free guarantee on the false-alarm
+# rate: with tau = the ceil((n+1)(1-alpha))-th smallest calibration score,
+# P(score(X_new) > tau) <= alpha for exchangeable normal data. No anomalies and
+# no labels are needed to set it.
+#
+# Two arms separate the guarantee from the assumption:
+#   deploy   -- calibrate on held-out TRAIN normals, measure the false-alarm rate
+#               on TEST normals. This is what an operator can actually do, and it
+#               only holds if train and test normals are exchangeable.
+#   exchange -- calibrate and measure on disjoint halves of the same held-out
+#               train normals. Coverage must hold here by construction, so it
+#               isolates whether any failure in `deploy` is a distribution shift.
+#
+# Read by scripts/conformal_threshold.py (no CLI args).
+#   uv run python scripts/conformal_threshold.py
+
+gpu: 2
+seed: 42
+
+alphas: [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.10]
+n_calib_draws: 200        # random calibration subsets, to check coverage on average
+
+miic:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  n_bank: 1000            # memory-bank images (matches the main detector)
+  n_heldout: 4000         # held-out normals, DISJOINT from the bank, for calibration
+  n_calib: 2000           # calibration-set size per draw (alpha_min ~ 1/(n+1))
+  model:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    input_size: 518
+  batch_size: 16
+  detector:
+    patches_per_image: 256
+    coreset_size: 100000
+    top_k: 1
+
+mvtec:
+  enabled: true
+  root: /autofs/space/crater_001/projects/micropath/semi/MVTec
+  # train/good is small, so split it: a bank fraction and a calibration fraction
+  bank_frac: 0.6
+  calib_frac: 0.8         # fraction of the held-out good images used per draw
+  input_size: 518
+  batch_size: 8
+  model:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    input_size: 518
+  detector:
+    patches_per_image: 300
+    coreset_size: 50000
+    top_k: 1
+  # only alphas coarser than 1/(n_calib+1) are reportable per category
+  alphas: [0.01, 0.02, 0.05, 0.10]
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/conformal
