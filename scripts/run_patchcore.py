@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Track A -- one-class MIL (PatchCore-style) anomaly detection on MIIC.
+"""One-class detector -- MIL over a memory bank (PatchCore-style) on MIIC.
 
 Framed as MIL: each 512x512 image is a *bag*; each feature-map cell is an
 *instance*. We model "normal" with a memory bank of normal patch features, score

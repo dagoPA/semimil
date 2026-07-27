@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-"""Track A (one-class DINOv2, no training) on MVTec-AD -- external validity.
+"""One-class detector (DINOv2, no training) on MVTec-AD -- external validity.
 
-Runs the exact MIIC Track A method on each of the 15 MVTec categories: build a
+Runs the exact MIIC one-class method on each of the 15 MVTec categories: build a
 memory bank from that category's train/good images, score its test split by
 nearest-neighbour distance, and report image AUROC + pixel AUROC + PRO. The mean
 over categories tests whether the method generalizes beyond the IC-microscopy
@@ -134,7 +134,7 @@ def main() -> None:
             for k in ("image_auroc", "pixel_auroc", "pro")}
     summary = {"mean": mean, "per_category": results, "n_categories": len(cats)}
     (out_dir / "results.json").write_text(json.dumps(summary, indent=2))
-    print("\n=== MVTec-AD mean (Track A, DINOv2, no training) ===")
+    print("\n=== MVTec-AD mean (one-class detector, DINOv2, no training) ===")
     print(f"  image AUROC {mean['image_auroc']:.4f} | pixel AUROC {mean['pixel_auroc']:.4f} "
           f"| PRO {mean['pro']:.4f}")
     print(f"saved -> {out_dir / 'results.json'}")

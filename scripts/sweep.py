@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Ablations + multi-seed sweep for Track A (one-class MIL) on MIIC.
+"""Ablations + multi-seed sweep for the one-class detector on MIIC.
 
 Runs the memory-bank detector across extractors and seeds, plus 1-D ablations of
 the DINOv2 variant (memory size, top-k pooling, input resolution). Reports image

@@ -3,7 +3,7 @@
 
 Models each feature-map position with a multivariate Gaussian over pretrained
 CNN features and scores by Mahalanobis distance. Unlike the memory-bank detector
-(Track A), PaDiM assumes rough spatial alignment across images -- a poor fit for
+(our one-class detector), PaDiM assumes rough spatial alignment across images
 IC microscopy, which this baseline quantifies. Multi-seed (the seed drives the
 random channel subset and the training sample).
 

@@ -1,4 +1,4 @@
-# Cross-evaluation: Track A (one-class MIL) vs Track B (attention-MIL),
+# Cross-evaluation: one-class detector vs attention-MIL,
 # each scored on BOTH the real GT test and the held-out synthetic test.
 # Read directly by scripts/cross_eval.py (no CLI args).
 
@@ -9,8 +9,8 @@ run_name: cross_dinov2
 data:
   raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
   # training signal
-  train_normal_glob: "Anomaly_train/train_normal_*.jpg"   # Track A memory + Track B negatives
-  pos_glob: "Inpainting_train/*_anomaly.jpg"              # Track B positives (synthetic)
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"   # one-class memory + attention-MIL negatives
+  pos_glob: "Inpainting_train/*_anomaly.jpg"              # attention-MIL positives (synthetic)
   neg_glob: "Inpainting_train/*_original.jpg"
   n_extra_normal: 1000
   # real GT test
@@ -29,20 +29,20 @@ model:
   input_size: 518
   batch_size: 16
 
-memory:                # Track A memory bank
+memory:                # one-class memory bank
   n_images: 1000
   patches_per_image: 256
   coreset_size: 100000
 
 score:
-  top_k: 1             # Track A image score = mean of top-k patch distances
+  top_k: 1             # one-class image score = mean of top-k patch distances
 
-mil:                   # Track B head
+mil:                   # attention-MIL head
   hidden_dim: 256
   attn_dim: 128
   dropout: 0.25
 
-train:                 # Track B training
+train:                 # attention-MIL training
   epochs: 40
   lr: 0.0003
   weight_decay: 0.0001

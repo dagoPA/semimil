@@ -1,4 +1,4 @@
-# Track A -- one-class MIL (PatchCore-style) on MIIC.
+# One-class detector -- MIL over a memory bank (PatchCore-style) on MIIC.
 # Read directly by scripts/run_patchcore.py (no CLI args) for reproducibility.
 
 seed: 42

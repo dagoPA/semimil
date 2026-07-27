@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-"""Cross-evaluate Track A (one-class MIL) and Track B (attention-MIL) on BOTH
+"""Cross-evaluate the one-class detector and attention-MIL on BOTH
 the real GT test and the held-out synthetic test.
 
-Track A = unsupervised MIL: memory bank of normal patches + top-k pooling of
-per-instance distances (no labels). Track B = supervised MIL: gated-attention
+One-class = unsupervised MIL: memory bank of normal patches + top-k pooling of
+per-instance distances (no labels). Attention-MIL = weakly supervised: gated
 head trained on synthetic positives. Same DINOv2 instances feed both, so the
 2x2 (model x domain) table isolates the synthetic->real domain gap.
 
@@ -115,11 +115,11 @@ def main() -> None:
     syn_abn = list_images(sorted(raw.glob(d["syn_test_pos_glob"])))
     print(f"real: {len(real_norm)}N/{len(real_abn)}A   synthetic: {len(syn_norm)}N/{len(syn_abn)}A")
 
-    # ---- Track A: memory bank ----
+    # ---- one-class detector: memory bank ----
     print("[A] building memory bank ...")
     memory = build_memory(mem_imgs, extractor, size, bs, cfg, gen, device)
 
-    # ---- Track B: train attention-MIL ----
+    # ---- attention-MIL: train ----
     print("[B] precomputing train features + training ...")
     Fpos, _ = precompute(pos, extractor, size, bs)
     Fneg, _ = precompute(neg, extractor, size, bs)
@@ -162,8 +162,8 @@ def main() -> None:
         results[domain] = {
             "n_normal": len(Fn),
             "n_abnormal": len(Fa),
-            "track_A_oneclass": metrics(y_all, sa),
-            "track_B_attnMIL": metrics(y_all, sb),
+            "oneclass": metrics(y_all, sa),
+            "attn_mil": metrics(y_all, sb),
         }
         names = [p.name for p in list(negs) + list(abns)]
         with (out_dir / f"scores_{domain}.csv").open("w", newline="") as fh:
@@ -179,7 +179,7 @@ def main() -> None:
     print("\n=== CROSS-EVAL  (bal_acc / AUPRC / kappa @ 1% FPR operating point) ===")
     hdr = f"{'model':<24}{'domain':<12}{'bal_acc':>9}{'AUPRC':>9}{'kappa':>9}{'AUROC':>9}"
     print(hdr)
-    rows = [("Track A one-class", "track_A_oneclass"), ("Track B attn-MIL", "track_B_attnMIL")]
+    rows = [("one-class detector", "oneclass"), ("attention-MIL", "attn_mil")]
     for domain, r in results.items():
         for label, key in rows:
             m = r[key]

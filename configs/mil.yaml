@@ -1,4 +1,4 @@
-# Track B -- weakly-supervised attention-MIL on MIIC.
+# Attention-MIL -- weakly-supervised anomaly detection on MIIC.
 # bag = image, instance = feature-map cell. Trained on SYNTHETIC positives
 # (Inpainting split) vs normals; evaluated on the REAL abnormal test set.
 # Read directly by scripts/train_mil.py (no CLI args) for reproducibility.
@@ -20,7 +20,7 @@ data:
   test_abnormal_dir: "Anomaly_test/abnormal_img"
   test_mask_dir: "Anomaly_test/abnormal_mask"
 
-model:                # feature extractor (shared with Track A / run_patchcore)
+model:                # feature extractor (shared with the one-class detector)
   type: dinov2        # cnn | dinov2
   backbone: wide_resnet50_2
   layers: [layer2, layer3]

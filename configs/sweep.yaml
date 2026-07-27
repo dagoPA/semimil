@@ -1,4 +1,4 @@
-# Ablations + multi-seed sweep for Track A (one-class MIL) on MIIC.
+# Ablations + multi-seed sweep for the one-class detector on MIIC.
 # Read by scripts/sweep.py (no CLI args). Launch pinned to a free GPU, e.g.:
 #   CUDA_VISIBLE_DEVICES=1 uv run python scripts/sweep.py
 

@@ -1,5 +1,5 @@
-# External-validity check: Track A (one-class, DINOv2, NO training) on MVTec-AD.
-# Same method as MIIC Track A, per category: memory bank from train/good, score
+# External-validity check: one-class detector (DINOv2, NO training) on MVTec-AD.
+# Same method as on MIIC, per category: memory bank from train/good, score
 # the test split, report image AUROC + pixel AUROC + PRO, averaged over categories.
 #   uv run python scripts/run_mvtec.py
 

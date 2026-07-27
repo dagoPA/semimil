@@ -3,7 +3,7 @@
 
 Re-fits each model under our clean protocol (val from train), predicts on the
 real test set, extracts the per-image anomaly map, and scores localization with
-the SAME pixel-AUROC + PRO functions used for Track A (scripts/localization.py),
+the SAME pixel-AUROC + PRO functions used for the one-class detector
 so the localization table is computed uniformly across methods.
 
     uv run --with anomalib --with certifi python scripts/localization_anomalib.py

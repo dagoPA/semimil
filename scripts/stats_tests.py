@@ -3,7 +3,7 @@
 
 DeLong's test (Sun & Xu, 2014, fast algorithm) compares two AUROCs computed on
 the *same* test samples and returns a p-value for their difference. We compare
-the reference method (Track A, DINOv2) against every other method using their
+the reference method (one-class detector, DINOv2) against every other method
 saved per-image scores.
 
     uv run python scripts/stats_tests.py

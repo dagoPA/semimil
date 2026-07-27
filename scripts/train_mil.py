@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-"""Track B -- weakly-supervised attention-MIL anomaly detection on MIIC.
+"""Attention-MIL -- weakly-supervised anomaly detection on MIIC.
 
 Each image is a *bag* of feature-map-cell *instances* (shared frozen extractor
-with Track A). A gated-attention MIL head (Ilse et al., 2018) is trained to
+with the one-class detector). A gated-attention MIL head (Ilse et al., 2018)
 classify bags normal/abnormal using SYNTHETIC positives (the Inpainting split);
 the learned attention over instances gives localization. Evaluation is on the
 REAL abnormal test set, which the model never sees in training.

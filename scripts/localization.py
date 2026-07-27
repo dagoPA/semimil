@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Pixel-level localization metrics (pixel AUROC + PRO) for the one-class methods.
 
-Reproduces each Track A run from the config saved in its metrics.json, rebuilds
+Reproduces each one-class run from the config saved in its metrics.json, rebuilds
 the memory bank, and scores the real test set, upsampling anomaly maps to a common
 resolution so pixel AUROC and PRO are computed uniformly. PRO (per-region overlap,
 integrated up to 30% FPR) weights every ground-truth region equally regardless of

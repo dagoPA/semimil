@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Per-defect-size analysis of Track A (DINOv2), post-hoc from saved scores.
+"""Per-defect-size analysis of the one-class detector (DINOv2), from saved scores.
 
 Bins the real abnormal test images by defect area and reports, per bin, the
 detection rate (recall) at the 1% FPR operating point and the AUROC vs. all
