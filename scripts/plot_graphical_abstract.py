@@ -65,9 +65,9 @@ def main() -> None:
     fig.patch.set_facecolor("white")
     ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
 
-    ax.text(0.5, 0.945, "Unsupervised One-Class Multiple-Instance Learning for "
-            "IC-Microscopy Anomaly Detection", ha="center", va="center",
-            fontsize=9.0, color=INK, fontweight="bold")
+    # Matches the paper title; the flow below already says what the method is.
+    ax.text(0.5, 0.945, "The Feature Extractor Decides", ha="center", va="center",
+            fontsize=13.0, color=INK, fontweight="bold")
 
     yc = 0.50  # vertical centre of the flow
 
