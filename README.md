@@ -1,7 +1,7 @@
-# semimil — Anomaly Detection in Integrated-Circuit Microscopy
+# semimil — The Feature Extractor Decides
 
-**Unsupervised versus Weakly-Supervised Multiple-Instance Learning for
-semiconductor (IC) inspection.**
+**Label-scarce anomaly detection in integrated-circuit microscopy: unsupervised
+versus weakly-supervised Multiple-Instance Learning.**
 
 Dagoberto Pulido Arias · Massachusetts General Hospital / Harvard Medical School ·
 `dpulido@mgh.harvard.edu`
@@ -189,8 +189,8 @@ Both are publicly available; see the paper for licensing and access.
 
 ```bibtex
 @article{pulido2025icmil,
-  title   = {Anomaly Detection in Integrated-Circuit Microscopy:
-             Unsupervised versus Weakly-Supervised Multiple-Instance Learning},
+  title   = {The Feature Extractor Decides: Label-Scarce Anomaly Detection
+             in Integrated-Circuit Microscopy},
   author  = {Pulido Arias, Dagoberto},
   journal = {IEEE Latin America Transactions (under review)},
   year    = {2025}
