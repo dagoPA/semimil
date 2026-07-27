@@ -142,14 +142,18 @@ def main() -> None:
     ax.text(0.5, 0.045, "no labels   ·   no training   ·   frozen backbone",
             ha="center", fontsize=7.0, color=RED, style="italic")
 
-    arrow(ax, 0.85, 0.885, yc)
+    arrow(ax, 0.85, 0.872, yc)
 
     # ---- Stage 5: results ----
-    rx = 0.935
+    # rx is bounded by the widest item in this column ("beats 8 competing",
+    # 0.134 wide): centring it any further right pushes ink past the canvas.
+    rx = 0.922
     ax.text(rx, 0.66, "image AUROC", ha="center", fontsize=6.8, color=MUTED)
     ax.text(rx, 0.545, "0.972", ha="center", fontsize=20, color=RED, fontweight="bold")
-    ax.text(rx, 0.41, "beats 8 baselines", ha="center", fontsize=6.8, color=INK)
-    ax.text(rx, 0.352, "(DeLong · Holm)", ha="center", fontsize=5.8, color=MUTED)
+    # two lines: the full phrase would run past the right edge at this x
+    ax.text(rx, 0.432, "beats 8 competing", ha="center", fontsize=6.8, color=INK)
+    ax.text(rx, 0.378, "methods", ha="center", fontsize=6.8, color=INK)
+    ax.text(rx, 0.320, "(DeLong · Holm)", ha="center", fontsize=5.8, color=MUTED)
     ax.text(rx, 0.235, "generalizes to", ha="center", fontsize=6.0, color=MUTED)
     ax.text(rx, 0.175, "MVTec AD 0.974", ha="center", fontsize=7.0, color=STEEL,
             fontweight="bold")
