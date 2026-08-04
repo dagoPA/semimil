@@ -3,8 +3,12 @@
 **Label-scarce anomaly detection in integrated-circuit microscopy: unsupervised
 versus weakly-supervised Multiple-Instance Learning.**
 
-Dagoberto Pulido Arias · Massachusetts General Hospital / Harvard Medical School ·
-`dpulido@mgh.harvard.edu`
+Dagoberto Pulido Arias ([ORCID](https://orcid.org/0009-0007-3966-3919)) ·
+Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General
+Hospital and Harvard Medical School · `dpulido@mgh.harvard.edu`
+
+Oliverio Cruz-Mejía · National Autonomous University of Mexico (UNAM) ·
+`oliverio.cruz.mejia@comunidad.unam.mx`
 
 ![Graphical abstract: a bag of image patches is embedded by a frozen DINOv2
 backbone; each patch feature is scored by its distance to a memory bank of normal
