@@ -31,10 +31,10 @@ REF = "DINOv2 (one-class)"
 
 OURS = {"DINOv2 (one-class)", "Attention-MIL", "WRN50 (one-class)", "DINOv2-dom (one-class)"}
 LABEL = {
-    "DINOv2 (one-class)": "DINOv2 · one-class  (nuestro)",
-    "Attention-MIL": "Attention-MIL  (nuestro)",
-    "WRN50 (one-class)": "WRN50 · one-class  (nuestro)",
-    "DINOv2-dom (one-class)": "DINOv2-dominio  (nuestro)",
+    "DINOv2 (one-class)": "DINOv2 · one-class  (ours)",
+    "Attention-MIL": "Attention-MIL  (ours)",
+    "WRN50 (one-class)": "WRN50 · one-class  (ours)",
+    "DINOv2-dom (one-class)": "DINOv2-domain  (ours)",
     "PatchCore": "PatchCore ‡",
     "FastFlow": "FastFlow ‡",
     "PaDiM": "PaDiM",
@@ -80,7 +80,7 @@ def main() -> None:
 
     ax.set_yticks(range(n))
     ax.set_yticklabels([LABEL[r["method"]] for r in rows][::-1], fontsize=9)
-    ax.set_xlabel("AUROC de imagen  (IC 95% por bootstrap, 2000 remuestreos)", fontsize=9.5)
+    ax.set_xlabel("Image AUROC  (95 % bootstrap CI, 2000 resamples)", fontsize=9.5)
     ax.set_xlim(0.50, 1.005)
     ax.grid(axis="x", color=GRID, lw=0.8, zorder=0)
     ax.set_axisbelow(True)
@@ -94,12 +94,12 @@ def main() -> None:
 
     handles = [
         Line2D([0], [0], marker="o", color=RED, lw=0, mfc=RED, mec="white", ms=9,
-               label="Nuestros métodos"),
+               label="Our methods"),
         Line2D([0], [0], marker="s", color=STEEL, lw=0, mfc="white", mec=STEEL, mew=2, ms=8,
-               label="Baselines / literatura  (‡ reproducido)"),
+               label="Baselines / literature  (‡ reproduced)"),
     ]
     ax.legend(handles=handles, loc="lower right", frameon=False, fontsize=8.5)
-    ax.set_title("Ranking de métodos en el test real (n=1388, 116 con defecto)",
+    ax.set_title("Method ranking on the real test set (n=1388, 116 defective)",
                  fontsize=11, color=INK, pad=10)
     fig.tight_layout()
     fig.savefig(OUT, dpi=150, bbox_inches="tight", facecolor="white")

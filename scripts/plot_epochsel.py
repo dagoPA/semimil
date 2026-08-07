@@ -66,19 +66,19 @@ def main() -> None:
         ax.plot(best_x, best_y, "o", ms=11, mfc=STEEL, mec="white", mew=1.6, zorder=5)
         ax.plot(last_x, last_y, "o", ms=9, mfc="white", mec=STEEL, mew=2, zorder=5)
 
-        ax.annotate(f"mejor época: {best_y:.3f}", (best_x, best_y),
+        ax.annotate(f"best epoch: {best_y:.3f}", (best_x, best_y),
                     textcoords="offset points", xytext=(0, 12), ha="center",
                     fontsize=8, color=INK, fontweight="bold")
-        ax.annotate(f"última: {last_y:.3f}", (last_x, last_y),
+        ax.annotate(f"last: {last_y:.3f}", (last_x, last_y),
                     textcoords="offset points", xytext=(-4, -14), ha="right",
                     fontsize=8, color=MUTED)
         # label the literature line at the left edge (best/last markers sit
         # on the curve, right/interior, so this never collides with them)
-        ax.text(1.0, lit - 0.006, f"reportado [14]: {lit:.3f}",
+        ax.text(1.0, lit - 0.006, f"reported [14]: {lit:.3f}",
                 ha="left", va="top", fontsize=7.5, color=MUTED, style="italic")
 
         ax.set_title(TITLE[name], fontsize=11, color=INK, pad=8)
-        ax.set_xlabel("época", fontsize=9)
+        ax.set_xlabel("epoch", fontsize=9)
         ax.set_xlim(0.5, len(xs) + 0.5)
         ax.grid(axis="y", color=GRID, lw=0.8, zorder=0)
         ax.set_axisbelow(True)
@@ -88,24 +88,24 @@ def main() -> None:
             ax.spines[sp].set_color(MUTED)
         ax.tick_params(length=0, labelsize=8)
 
-    axes[0].set_ylabel("AUROC de imagen (test)", fontsize=9.5)
+    axes[0].set_ylabel("Image AUROC (test)", fontsize=9.5)
     axes[0].set_ylim(0.70, 1.005)
 
     handles = [
         Line2D([0], [0], color=STEEL, lw=1.7, marker="o", ms=4, mfc=STEEL,
-               mec="white", label="AUROC por época (baseline)"),
+               mec="white", label="AUROC per epoch (baseline)"),
         Line2D([0], [0], color=MUTED, lw=1.2, ls=(0, (5, 3)),
-               label="reportado por [14]"),
+               label="reported by [14]"),
         Line2D([0], [0], color=RED, lw=1.7,
-               label=f"DINOv2 one-class (nuestro), sin selección sobre test ({ref:.3f})"),
+               label=f"DINOv2 one-class (ours), no selection on test ({ref:.3f})"),
         Line2D([0], [0], color=STEEL, lw=0, marker="o", ms=9, mfc=STEEL,
-               mec="white", mew=1.4, label="mejor época (elegida sobre el test)"),
+               mec="white", mew=1.4, label="best epoch (selected on the test set)"),
         Line2D([0], [0], color=STEEL, lw=0, marker="o", ms=8, mfc="white",
-               mec=STEEL, mew=2, label="última época (sin fuga)"),
+               mec=STEEL, mew=2, label="last epoch (leakage-free)"),
     ]
     fig.legend(handles=handles, loc="lower center", ncol=3, frameon=False,
                fontsize=8, bbox_to_anchor=(0.5, -0.06))
-    fig.suptitle("La AUROC reportada depende de elegir la época sobre el conjunto de test",
+    fig.suptitle("Reported AUROC depends on selecting the epoch on the test set",
                  fontsize=11.5, color=INK, y=1.0)
     fig.tight_layout(rect=(0, 0.02, 1, 0.98))
     fig.savefig(OUT, dpi=150, bbox_inches="tight", facecolor="white")

@@ -135,7 +135,7 @@ def main() -> None:
     print("[plot] rendering ...")
     n = len(picks)
     fig, axes = plt.subplots(n, 4, figsize=(12, 3.05 * n))
-    cols = ["original", "ground truth", "detector one-class", "MIL · atención"]
+    cols = ["original", "ground truth", "one-class detector", "attention-MIL"]
     for j, c in enumerate(cols):
         axes[0, j].set_title(c, fontsize=12)
     for r, k in enumerate(picks):
@@ -153,15 +153,15 @@ def main() -> None:
         axes[r, 2].imshow(a_map, cmap="jet", alpha=0.5)
         axes[r, 3].imshow(img, cmap="gray")
         axes[r, 3].imshow(b_map, cmap="jet", alpha=0.5)
-        tag = "detecta" if probs[k] >= 0.5 else "FALLA"
+        tag = "detects" if probs[k] >= 0.5 else "MISSES"
         axes[r, 0].set_ylabel(
-            f"{pth.name}\ndefecto {mask.mean() * 100:.2f}%\nMIL: {tag} (p={probs[k]:.2f})", fontsize=8
+            f"{pth.name}\ndefect {mask.mean() * 100:.2f}%\nMIL: {tag} (p={probs[k]:.2f})", fontsize=8
         )
         for j in range(4):
             axes[r, j].set_xticks([])
             axes[r, j].set_yticks([])
     fig.suptitle(
-        "Detector one-class vs. MIL con atención sobre los mismos defectos reales", y=1.0
+        "One-class detector vs. attention-MIL on the same real defects", y=1.0
     )
     fig.tight_layout()
     out = ASSETS / "comparison.png"

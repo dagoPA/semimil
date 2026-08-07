@@ -65,18 +65,18 @@ def main() -> None:
     band(ax, xl + w, xm, (30, 280), (30, 280), STEEL)          # MIIC -> sin defecto
     band(ax, xl + w, xm, (280, 289), (295, 304), RED, 0.6)     # MIIC -> con defecto
     band(ax, xm + w, xr, (30, 267), (30, 267), STEEL)          # sin defecto -> train
-    band(ax, xm + w, xr, (267, 280), (279, 292), STEEL)        # sin defecto -> test
-    band(ax, xm + w, xr, (295, 304), (292, 301), RED, 0.6)     # con defecto -> test
+    band(ax, xm + w, xr, (267, 280), (279, 292), STEEL)        # defect-free -> test
+    band(ax, xm + w, xr, (295, 304), (292, 301), RED, 0.6)     # defective -> test
 
     def lbl(x, y, name, count, ha, color=INK, big=10.5):
         ax.text(x, y, name, ha=ha, va="center", fontsize=big, color=color, weight="bold")
         ax.text(x, y + 11, count, ha=ha, va="center", fontsize=9, color=color)
 
-    lbl(xl + w / 2, 14, "MIIC", "25 276 imágenes", "center")
-    lbl(xm + w / 2, 14, "Sin defecto", "25 160", "center")
-    lbl(xm + w + 8, 299, "Con defecto", "116  (0,46 %)", "left", RED, 10)
-    lbl(xr + w + 8, 143, "Entrenamiento", "23 888 sin defecto", "left")
-    lbl(xr + w + 8, 284, "Test real", "1 272 sin defecto + 116 con defecto", "left")
+    lbl(xl + w / 2, 14, "MIIC", "25,276 images", "center")
+    lbl(xm + w / 2, 14, "Defect-free", "25,160", "center")
+    lbl(xm + w + 8, 299, "Defective", "116  (0.46 %)", "left", RED, 10)
+    lbl(xr + w + 8, 143, "Training", "23,888 defect-free", "left")
+    lbl(xr + w + 8, 284, "Real test", "1,272 defect-free + 116 defective", "left")
 
     fig.tight_layout()
     fig.savefig(OUT, dpi=140, bbox_inches="tight", facecolor="white")

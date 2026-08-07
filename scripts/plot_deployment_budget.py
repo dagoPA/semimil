@@ -76,7 +76,7 @@ def main() -> None:
     ax.fill_between(ks, mu - sd, mu + sd, color=RED, alpha=0.16, lw=0, zorder=2)
     ax.plot(ks, mu, color=RED, lw=2.0, marker="o", ms=5.5, mec="white", mew=1.2, zorder=4)
     ax.axhline(full, color=MUTED, lw=1.0, ls="--", alpha=0.7, zorder=1)
-    ax.text(ks[-1], full + 0.006, f"banco completo (k={ks[-1]}): {full:.3f}",
+    ax.text(ks[-1], full + 0.006, f"full bank (k={ks[-1]}): {full:.3f}",
             color=MUTED, fontsize=7.6, va="bottom", ha="right")
 
     # the operationally meaningful point: the smallest bank that already beats the
@@ -88,7 +88,7 @@ def main() -> None:
     if cross is not None:
         mc = mu[ks.index(cross)]
         ax.plot([cross], [mc], marker="o", ms=12, mfc="none", mec=RED, mew=1.8, zorder=5)
-        ax.annotate(f"k={cross}: {mc:.3f}\nya supera al baseline",
+        ax.annotate(f"k={cross}: {mc:.3f}\nalready beats the baseline",
                     xy=(cross, mc), xytext=(cross * 1.6, mc - 0.085),
                     color=RED, fontsize=8.2, fontweight="bold",
                     arrowprops={"arrowstyle": "-", "color": RED, "lw": 1.0, "alpha": 0.6})
@@ -96,28 +96,28 @@ def main() -> None:
     ax.set_xscale("log", base=2)
     ax.set_xticks(ks)
     ax.set_xticklabels([str(k) for k in ks], fontsize=7.6)
-    ax.set_xlabel("imágenes normales en el banco (k)", color=INK, fontsize=9)
-    ax.set_ylabel("AUROC de imagen", color=INK, fontsize=9)
-    ax.set_title("(a) Presupuesto de imágenes normales", color=INK, fontsize=9.8,
+    ax.set_xlabel("normal images in the bank (k)", color=INK, fontsize=9)
+    ax.set_ylabel("Image AUROC", color=INK, fontsize=9)
+    ax.set_title("(a) Normal-image budget", color=INK, fontsize=9.8,
                  fontweight="bold", pad=8)
 
     # ---------------- (b, c) contamination ----------------------------------
     con = [r for r in res if r["part"] == "contam"]
-    titles = {"synthetic": "(b) Contaminación con anomalías sintéticas",
-              "real": "(c) Contaminación con anomalías reales"}
+    titles = {"synthetic": "(b) Contamination with synthetic anomalies",
+              "real": "(c) Contamination with real anomalies"}
     for ax, source in zip(axes[1:], ("synthetic", "real"), strict=True):
         style(ax)
         rows = [r for r in con if r["source"] == source]
         if not rows:
-            ax.text(0.5, 0.5, "sin datos", ha="center", va="center",
+            ax.text(0.5, 0.5, "no data", ha="center", va="center",
                     transform=ax.transAxes, color=MUTED)
             ax.set_axis_off()
             continue
         rates = sorted({r["rate"] for r in rows})
         x = np.array(rates) * 100
         for clean, color, marker, mfc, label in (
-            (False, RED, "o", RED, "banco crudo"),
-            (True, STEEL, "s", "white", "auto-limpieza (descarta 10 %)"),
+            (False, RED, "o", RED, "raw bank"),
+            (True, STEEL, "s", "white", "self-cleaning (drops 10 %)"),
         ):
             sel = [[r for r in rows if r["rate"] == q and r["clean"] == clean] for q in rates]
             if not all(sel):
@@ -131,17 +131,17 @@ def main() -> None:
         ax.axvline(BASE_RATE, color=MUTED, lw=1.0, ls=":", alpha=0.85, zorder=1)
         # y in axes fraction so the label survives the shared-ylim pass below;
         # anchored at the top, clear of the legend in the lower-left corner
-        ax.text(BASE_RATE + 0.18, 0.97, f"tasa real de MIIC ({BASE_RATE} %)",
+        ax.text(BASE_RATE + 0.18, 0.97, f"MIIC's own rate ({BASE_RATE} %)",
                 transform=ax.get_xaxis_transform(), color=MUTED, fontsize=7.4,
                 va="top", rotation=90)
-        ax.set_xlabel("contaminación del pool sin etiquetar  ε (%)", color=INK, fontsize=9)
+        ax.set_xlabel("unlabeled-pool contamination  ε (%)", color=INK, fontsize=9)
         ax.set_title(titles[source], color=INK, fontsize=9.8, fontweight="bold", pad=8)
         leg = ax.legend(frameon=False, fontsize=8.2, loc="lower left",
                         handlelength=1.8, borderaxespad=0.4)
         for t in leg.get_texts():
             t.set_color(INK)
 
-    axes[1].set_ylabel("AUROC de imagen", color=INK, fontsize=9)
+    axes[1].set_ylabel("Image AUROC", color=INK, fontsize=9)
     # (b) and (c) answer the same question with different contaminants, so they
     # must share a y-range: different scales would exaggerate one of the drops.
     drawn = [ax for ax in axes[1:] if ax.axison]
