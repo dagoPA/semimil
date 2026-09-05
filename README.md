@@ -202,12 +202,12 @@ Both are publicly available; see the paper for licensing and access.
              in Integrated-Circuit Microscopy},
   author  = {Pulido Arias, Dagoberto and Cruz-Mej{\'i}a, Oliverio},
   journal = {IEEE Latin America Transactions (under review)},
-  year    = {2025}
+  year    = {2026}
 }
 ```
 
 ## Notes
 
 The manuscript source (LaTeX, IEEE template) is under `outputs/report/latex/` in
-the project space. AI-based tools assisted with code and drafting; all
-experiments, analyses and conclusions were verified by the authors.
+the project space. All research design, experiments, analyses, and
+conclusions are the authors' own and were verified by them.
