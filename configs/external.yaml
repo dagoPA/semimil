@@ -39,6 +39,21 @@ extractors:
     dino_name: vit_small_patch14_reg4_dinov2.lvd142m
     weights: /autofs/space/crater_001/projects/micropath/semi/outputs/patch_ssl/anchor1_all12/backbone.pth
 
+  frozen_L8:                    # intermediate block 8 (1-based), final norm applied
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    layers: [7]
+  frozen_L8_pool3:              # same, 3x3 local average of the token map
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    layers: [7]
+    pool: 3
+  frozen_L10_pool3:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    layers: [9]
+    pool: 3
+
 scales:                         # as in configs/tiled.yaml
   - {name: g1_518, grid: 1, input_size: 518}
   - {name: g1_378, grid: 1, input_size: 378}
@@ -52,6 +67,12 @@ methods:                        # a method = one extractor + one or more fused s
   - {name: adapted_anchor1_last4, extractor: adapted_anchor1_last4, scales: [g1_518]}
   - {name: adapted_anchor0_last4, extractor: adapted_anchor0_last4, scales: [g1_518]}
   - {name: adapted_anchor1_all12, extractor: adapted_anchor1_all12, scales: [g1_518]}
+  # configurations selected on MIIC (nested selection), applied here unchanged
+  - {name: L8,               extractor: frozen_L8, scales: [g1_518]}
+  - {name: L8_pool3,         extractor: frozen_L8_pool3, scales: [g1_518]}
+  - {name: L10_pool3,        extractor: frozen_L10_pool3, scales: [g1_518]}
+  - {name: fuse_L10pool3_L8, parts: [[frozen_L10_pool3, g1_518], [frozen_L8, g1_518]]}
+  - {name: fuse_L8_L8pool3,  parts: [[frozen_L8, g1_518], [frozen_L8_pool3, g1_518]]}
 
 run:
   dir: /autofs/space/crater_001/projects/micropath/semi/outputs/external/run

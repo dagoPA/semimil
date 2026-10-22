@@ -148,10 +148,13 @@ def run_scale(ds, rows, tasks, crop, sc, ext_name, extractor, cfg, seeds, raw_di
         picks = []
         for f in tokens([rows[i]["image"] for i in bank_imgs], crop, extractor, boxes, size, bs):
             f = f.reshape(-1, f.shape[-1])
+            if mem["patches_per_tile"] <= 0:  # exhaustive bank: keep every token
+                picks.append(f.half().cpu())
+                continue
             n_keep = mem["patches_per_tile"] * len(boxes)
             picks.append(f[torch.randint(0, f.shape[0], (n_keep,), generator=gen)].half().cpu())
         bank = torch.cat(picks)
-        if bank.shape[0] > mem["coreset_size"]:
+        if mem["coreset_size"] > 0 and bank.shape[0] > mem["coreset_size"]:
             bank = bank[torch.randperm(bank.shape[0], generator=gen)[: mem["coreset_size"]]]
         banks[(t, s)] = bank.to(DEVICE).float()
         calib_of[(t, s)], test_of[(t, s)] = calib, tasks[t]["test"]
@@ -185,6 +188,13 @@ def run_scale(ds, rows, tasks, crop, sc, ext_name, extractor, cfg, seeds, raw_di
           f"({time.time() - t0:.0f}s)", flush=True)
 
 
+def parts_of(m: dict) -> list[tuple[str, str]]:
+    """(extractor, scale) pairs a method fuses: ``parts`` if given, else extractor x scales."""
+    if "parts" in m:
+        return [tuple(p) for p in m["parts"]]
+    return [(m["extractor"], sc) for sc in m["scales"]]
+
+
 # ----------------------------------------------------------------------------- #
 # metrics
 # ----------------------------------------------------------------------------- #
@@ -196,8 +206,7 @@ def evaluate(cfg, datasets, methods, seeds, raw_dir, out_dir):
         for m in methods:
             for t in tasks:
                 for s in seeds:
-                    files = [raw_dir / ds / f"{m['extractor']}__{sc}" / f"{t}_s{s}.npz"
-                             for sc in m["scales"]]
+                    files = [raw_dir / ds / f"{e}__{sc}" / f"{t}_s{s}.npz" for e, sc in parts_of(m)]
                     if not all(f.exists() for f in files):
                         continue
                     zs, zm, idx = [], [], None
@@ -287,7 +296,7 @@ def main() -> None:
               flush=True)
 
     # run every (extractor, scale) any enabled method needs
-    needed = sorted({(m["extractor"], sc) for m in methods for sc in m["scales"]})
+    needed = sorted({part for m in methods for part in parts_of(m)})
     for ext_name in sorted({e for e, _ in needed}):
         extractor = build_extractor(cfg["extractors"][ext_name], DEVICE)
         for ds, (rows, tasks, crop) in datasets.items():

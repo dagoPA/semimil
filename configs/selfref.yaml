@@ -1,0 +1,43 @@
+# Periodic self-reference + memory bank on MIIC (scripts/run_selfref.py, no CLI args).
+seed: 42                  # fixes the calibration set (same as configs/tiled.yaml)
+seeds: [0, 1, 2]          # memory-bank sampling seeds
+limit_test: 0
+batch_size: 32
+input_size: 518           # DINOv2 ViT-S/14 -> 37x37 tokens on a 512 px image
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+model:
+  type: dinov2
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+
+memory:                   # paper defaults
+  n_images: 1000
+  patches_per_image: 256
+  coreset_size: 100000
+
+calibration:
+  n_images: 200           # training normals outside every bank; standardize bank and self scores
+
+lattice:                  # fixed a priori from the physics of the problem, not tuned on test
+  min_corr: 0.5           # autocorrelation needed to call an image periodic
+  min_shift: 16           # px; > the side of a small defect (<0.1 % of 512^2 is <16 px)
+  max_shift: 128          # px
+  max_vectors: 3          # lattice vectors per image (each used as +v and -v)
+  nms_px: 6
+k_twins: 2                # patch self score = mean of the 2 closest twins
+
+eval:
+  pixel_res: 256          # as in scripts/localization.py
+  size_bins:
+    - [0.0, 0.1, small]
+    - [0.1, 1.0, medium]
+    - [1.0, 100.0, large]
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/selfref

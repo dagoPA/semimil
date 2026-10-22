@@ -113,8 +113,14 @@ class DINOv2FeatureExtractor:
     ``pretrain_ssl.py``) over the off-the-shelf DINOv2 backbone.
     """
 
-    def __init__(self, name: str, device: str, weights: str | None = None):
+    def __init__(self, name: str, device: str, weights: str | None = None,
+                 layers: list[int] | None = None, pool: int = 0):
         import timm
+
+        # layers: optional block indices (0-based) whose patch tokens are concatenated,
+        # each passed through the final norm; None keeps the original final-layer tokens.
+        # pool: optional k x k local average of each layer's token map (PatchCore-style).
+        self.layers, self.pool = layers, pool
 
         # dynamic_img_size lets the ViT accept any multiple-of-14 input (pos-embed
         # interpolation) -- needed for the resolution ablation.
@@ -138,6 +144,13 @@ class DINOv2FeatureExtractor:
         """[B,3,H,W] -> [B, Hf, Wf, D] patch tokens on their spatial grid."""
         x = x.to(self.device)
         g = x.shape[-1] // self.patch
+        if self.layers:
+            maps = self.model.forward_intermediates(
+                x, indices=self.layers, norm=True, output_fmt="NCHW", intermediates_only=True
+            )  # list of [B, D, g, g]
+            if self.pool > 1:
+                maps = [F.avg_pool2d(m, self.pool, stride=1, padding=self.pool // 2) for m in maps]
+            return torch.cat(maps, dim=1).permute(0, 2, 3, 1).contiguous()
         tokens = self.model.forward_features(x)  # [B, prefix + g*g, D]
         patch = tokens[:, self.prefix :, :]  # drop cls/register tokens
         return patch.reshape(patch.shape[0], g, g, patch.shape[-1]).contiguous()
@@ -149,7 +162,8 @@ def build_extractor(cfg_model: dict, device: str):
     if kind == "cnn":
         return PatchFeatureExtractor(cfg_model["backbone"], cfg_model["layers"], device)
     if kind == "dinov2":
-        return DINOv2FeatureExtractor(cfg_model["dino_name"], device, cfg_model.get("weights"))
+        return DINOv2FeatureExtractor(cfg_model["dino_name"], device, cfg_model.get("weights"),
+                                      cfg_model.get("layers"), cfg_model.get("pool", 0))
     raise ValueError(f"unknown model.type: {kind!r}")
 
 

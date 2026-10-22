@@ -1,0 +1,34 @@
+# Exhaustive memory bank on MIIC (scripts/run_bigbank.py, no CLI args).
+seed: 42                  # calibration set (same as run_tiled / run_selfref)
+bank_seed: 0              # random image order; banks are nested prefixes of it
+bank_images: [20, 60]
+input_size: 518
+batch_size: 32
+q_chunk: 4096             # queries per matmul block
+b_chunk: 400000           # bank tokens per matmul block
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+model:
+  type: dinov2
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+
+calibration:
+  n_images: 200
+
+eval:
+  pixel_res: 256
+  size_bins:
+    - [0.0, 0.1, small]
+    - [0.1, 1.0, medium]
+    - [1.0, 100.0, large]
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/bigbank_smoke
+limit_test: 10
+check: true
