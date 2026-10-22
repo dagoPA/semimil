@@ -1,0 +1,60 @@
+# Tiled, multi-scale one-class detector (DINOv2) on MIIC.
+# Read by scripts/run_tiled.py (no CLI args). Answers: does finer token
+# resolution recover the small defects (<0.1 % of the image) the paper misses?
+
+seed: 42                 # fixes the calibration set
+seeds: [0, 1, 2]         # memory-bank sampling seeds
+limit_test: 0            # >0 caps test images per class (smoke test)
+batch_size: 32           # tiles per forward pass (default; scales may override)
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+model:
+  type: dinov2
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+
+memory:
+  n_images: 1000         # normal images per bank (paper default)
+  patches_per_tile: 256  # random tokens kept per tile (paper: 256 per image)
+  coreset_size: 100000   # random subsample of the bank (paper default)
+
+calibration:
+  n_images: 200          # training normals, never in a bank; used only to
+                         # standardize scales before fusing them (label-free)
+
+# token_px = tile side / (input_size / 14)
+scales:
+  - {name: g1_518,  grid: 1, input_size: 518}                     # paper default, 13.8 px tokens
+  - {name: g1_378,  grid: 1, input_size: 378}                     # best resolution ablation, 19 px
+  - {name: g1_1036, grid: 1, input_size: 1036, batch_size: 4}     # whole image upsampled, 6.9 px
+  - {name: g2_518,  grid: 2, overlap: 0.25, input_size: 518}      # 320 px tiles, 8.6 px tokens
+  - {name: g3_518,  grid: 3, overlap: 0.25, input_size: 518}      # 213 px tiles, 5.8 px tokens
+  # equal bank coverage: the 100k cap keeps ~7% of g1 tokens but only ~2% (g2) and ~1% (g3),
+  # so the tiled banks are scaled by the number of tiles
+  - {name: g2_518_eq, grid: 2, overlap: 0.25, input_size: 518, coreset_size: 400000}
+  - {name: g3_518_eq, grid: 3, overlap: 0.25, input_size: 518, coreset_size: 900000}
+
+fusions:                 # mean of calibration z-scores (image score and map)
+  - [g1_518, g2_518]
+  - [g1_378, g2_518]
+  - [g1_378, g3_518]
+  - [g1_378, g2_518, g3_518]
+  - [g1_518, g2_518_eq]
+  - [g1_518, g3_518_eq]
+  - [g1_518, g2_518_eq, g3_518_eq]
+
+eval:
+  map_res: 128           # stitched anomaly-map resolution
+  pixel_res: 64          # pixel AUROC resolution (paper: 64)
+  size_bins:             # % of image area, as in the paper's size analysis
+    - [0.0, 0.1, small]
+    - [0.1, 1.0, medium]
+    - [1.0, 100.0, large]
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/tiled

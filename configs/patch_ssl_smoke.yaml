@@ -1,0 +1,32 @@
+# Patch-level domain adaptation of DINOv2 (anchored masked-token distillation).
+# Read by scripts/pretrain_patch.py (no CLI args; SEMIMIL_CONFIG overrides the path).
+
+seed: 42
+run_name: smoke
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"   # training normals only
+  limit_images: 256
+  num_workers: 3
+
+model:
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+
+train:
+  crop: 224              # native-scale crop (16x16 tokens of 14 px, as at inference)
+  epochs: 2
+  batch_size: 64
+  lr: 0.00005
+  min_lr: 0.000001
+  warmup_epochs: 1
+  weight_decay: 0.05
+  train_blocks: 4        # last N of 12 blocks are trained, the rest stay DINOv2
+  mask_ratio: 0.4        # fraction of patch tokens replaced by the mask token
+  target_layers: 4       # teacher target = mean of its last N block outputs (layer-normed)
+  beta: 1.0              # smooth-L1 transition
+  anchor_weight: 1.0     # cosine tie of visible tokens to frozen DINOv2 (0 = pure MIM)
+  ema_momentum: 0.999    # teacher EMA start (cosine to 1.0)
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/patch_ssl
