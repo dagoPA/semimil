@@ -1,0 +1,35 @@
+# Structure-conditional (Mondrian) calibration: token extraction + structure types.
+# Read by scripts/run_structcal.py; scored by scripts/analysis/structcal_eval.py.
+seed: 42                  # calibration split (same as run_bigbank)
+input_size: 518
+batch_size: 32
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+
+calibration:
+  n_images: 200           # held out of every memory bank
+
+kmeans:                   # structure types from training normals (not calibration, not test)
+  seed: 0
+  n_images: 300
+  n_tokens: 200000
+  iters: 30
+  k: [4, 8, 16, 32, 64]
+
+representations:          # the two parts of the proposed detector
+  - name: L8
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [7]}
+    bigbank: bigbank_L8
+  - name: L10_pool3
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [9], pool: 3}
+    bigbank: bigbank_L10_pool3
+  - name: L12
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m}
+    bigbank: bigbank
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/structcal

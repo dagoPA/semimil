@@ -1,0 +1,88 @@
+# MVTec AD with exhaustive banks and the proposed detector.
+# External datasets with EXHAUSTIVE memory banks (every normal token, no subsampling),
+# for the final MIIC-selected method. Same manifests as configs/external.yaml.
+
+seed: 42
+
+carinthia:                      # Carinthia-S, production SEM (Kofler & Hasic, Zenodo, CC BY 4.0)
+  root: /autofs/space/crater_001/projects/micropath/semi/Carinthia-S/extracted/data
+  normal_label: 6               # "no visible defect"; classes 1-5 are defects
+  n_folds: 5                    # only 227 normals: rotate them through the memory bank
+  seed: 0
+  crop: 8                       # px removed on every side: the right border is 3 px on
+                                # defect images and 2 px on normals (a label shortcut)
+  seeds: [0]                    # bank seeds; the 5 folds already give the spread
+
+texturead:                      # Texture-AD Wafer (Lei et al., arXiv:2409.06367, Apache-2.0)
+  root: /autofs/space/crater_001/projects/micropath/semi/TextureAD-Wafer/extracted/wafer_mvtec_format
+  n_folds: 2                    # photo-disjoint cross-fitting within each subclass
+  seed: 0
+  crop: 0
+  seeds: [0]                    # bank seeds; 14 subclasses x 2 photo folds give the spread
+
+mvtec:                          # MVTec AD (Bergmann et al., CVPR 2019): general benchmark, color
+  root: /autofs/space/crater_001/projects/micropath/semi/MVTec
+  rgb: true
+  crop: 0
+  seeds: [0]
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/external   # manifests
+
+extractors:
+  frozen:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+  adapted_anchor1_last4:        # patch-level adaptation trained on MIIC normals
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    weights: /autofs/space/crater_001/projects/micropath/semi/outputs/patch_ssl/anchor1_last4/backbone.pth
+  adapted_anchor0_last4:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    weights: /autofs/space/crater_001/projects/micropath/semi/outputs/patch_ssl/anchor0_last4/backbone.pth
+  adapted_anchor1_all12:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    weights: /autofs/space/crater_001/projects/micropath/semi/outputs/patch_ssl/anchor1_all12/backbone.pth
+
+  frozen_L8:                    # intermediate block 8 (1-based), final norm applied
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    layers: [7]
+  frozen_L8_pool3:              # same, 3x3 local average of the token map
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    layers: [7]
+    pool: 3
+  frozen_L10_pool3:
+    type: dinov2
+    dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+    layers: [9]
+    pool: 3
+
+scales:                         # as in configs/tiled.yaml
+  - {name: g1_518, grid: 1, input_size: 518}
+  - {name: g1_378, grid: 1, input_size: 378}
+  - {name: g2_518, grid: 2, overlap: 0.25, input_size: 518}
+
+methods:
+  - {name: full_L12,               extractor: frozen, scales: [g1_518]}
+  - {name: full_L8,                extractor: frozen_L8, scales: [g1_518]}
+  - {name: full_L10_pool3,         extractor: frozen_L10_pool3, scales: [g1_518]}
+  - {name: full_fuse_L8_L10pool3,  parts: [[frozen_L8, g1_518], [frozen_L10_pool3, g1_518]]}
+
+run:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/external/run_mvtec_full
+  datasets: [mvtec]
+  seeds: [0, 1, 2]
+  limit_test: 0                 # >0 caps test images per label per task (smoke)
+  batch_size: 32
+  calibration_fraction: 0.15    # of each task's normal pool, kept out of the bank
+  memory:
+    n_images: 1000000          # every image of the task pool
+    patches_per_tile: 0          # 0 = every token
+    coreset_size: 0              # 0 = no subsampling
+  eval:
+    map_res: 128
+    pixel_res: 128

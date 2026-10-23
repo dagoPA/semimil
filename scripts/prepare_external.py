@@ -81,6 +81,22 @@ def texturead(cfg: dict) -> list[dict]:
     return out
 
 
+def mvtec(cfg: dict) -> list[dict]:
+    """MVTec AD: one task per category; train/good is the normal pool, test as released."""
+    root = Path(cfg["root"])
+    out = []
+    for cat in sorted(d.name for d in root.iterdir() if (d / "train" / "good").is_dir()):
+        for p in sorted((root / cat / "train" / "good").glob("*.png")):
+            out.append({"image": str(p), "mask": "", "label": 0, "cls": cat, "split": "train"})
+        for d in sorted((root / cat / "test").iterdir()):
+            for p in sorted(d.glob("*.png")):
+                bad = d.name != "good"
+                mask = root / cat / "ground_truth" / d.name / f"{p.stem}_mask.png" if bad else ""
+                out.append({"image": str(p), "mask": str(mask), "label": int(bad), "cls": cat,
+                            "split": "test"})
+    return out
+
+
 def write(rows: list[dict], path: Path) -> None:
     with path.open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
@@ -117,6 +133,14 @@ def main() -> None:
                 "test_photos": len({r["photo"] for r in te}),
             }
     summary["texturead"] = per
+
+    if "mvtec" in cfg:
+        mv = mvtec(cfg["mvtec"])
+        write(mv, out / "mvtec.csv")
+        summary["mvtec"] = {c: {"train": sum(r["cls"] == c and r["split"] == "train" for r in mv),
+                                "test_normal": sum(r["cls"] == c and r["split"] == "test" and r["label"] == 0 for r in mv),
+                                "test_defect": sum(r["cls"] == c and r["label"] == 1 for r in mv)}
+                            for c in sorted({r["cls"] for r in mv})}
     (out / "manifest_summary.json").write_text(json.dumps(summary, indent=2))
     print(json.dumps(summary, indent=2))
 

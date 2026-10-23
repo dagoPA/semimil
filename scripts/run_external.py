@@ -54,13 +54,17 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # ----------------------------------------------------------------------------- #
 # data
 # ----------------------------------------------------------------------------- #
+RGB = False  # set per dataset in main(): MVTec is color, the semiconductor datasets are gray
+
+
 def load(path: str, crop: int) -> torch.Tensor:
-    """Grayscale image -> border-cropped, 512x512, ImageNet-normalized [3, 512, 512]."""
-    im = Image.open(path).convert("L")
+    """Image -> border-cropped, 512x512, ImageNet-normalized [3, 512, 512] (gray or RGB)."""
+    im = Image.open(path).convert("RGB" if RGB else "L")
     if crop:
         im = im.crop((crop, crop, im.width - crop, im.height - crop))
     im = im.resize((NATIVE, NATIVE), Image.BILINEAR)
-    x = torch.from_numpy(np.asarray(im, dtype=np.float32) / 255.0)[None].repeat(3, 1, 1)
+    a = np.asarray(im, dtype=np.float32) / 255.0
+    x = torch.from_numpy(a).permute(2, 0, 1) if RGB else torch.from_numpy(a)[None].repeat(3, 1, 1)
     return (x - IMAGENET_MEAN[0]) / IMAGENET_STD[0]
 
 
@@ -101,6 +105,12 @@ def make_tasks(name: str, rows: list[dict], cfg: dict) -> dict[str, dict]:
                              if r["cls"] == sub and r["fold"] != k and r["label"] == 0],
                     "test": [i for i, r in enumerate(rows) if r["cls"] == sub and r["fold"] == k],
                 }
+    elif name == "mvtec":  # one task per category, released split
+        for cat in sorted({r["cls"] for r in rows}):
+            tasks[cat] = {
+                "pool": [i for i, r in enumerate(rows) if r["cls"] == cat and r["split"] == "train"],
+                "test": [i for i, r in enumerate(rows) if r["cls"] == cat and r["split"] == "test"],
+            }
     if cfg.get("limit_test"):
         for t in tasks.values():
             lab = defaultdict(list)
@@ -234,6 +244,9 @@ def evaluate(cfg, datasets, methods, seeds, raw_dir, out_dir):
                            "image_auprc": float(average_precision_score(y, score)),
                            "pixel_auroc": float(roc_auc_score(gt.reshape(-1), amap.reshape(-1))),
                            "pro": pro_auc(amap, gt)}
+                    for fpr in (1, 5):  # recall at the (100 - fpr)th percentile of test normals
+                        thr = np.percentile(score[y == 0], 100 - fpr)
+                        rec[f"recall_at_{fpr}fpr"] = float((score[y == 1] >= thr).mean())
                     if ds == "carinthia":  # each defect class vs the held-out normals
                         cls = np.array([rows[i]["cls"] for i in idx])
                         for c in sorted(set(cls[y == 1])):
@@ -251,7 +264,7 @@ def evaluate(cfg, datasets, methods, seeds, raw_dir, out_dir):
 
     # summary: mean over tasks within a seed, then mean +- std over seeds
     lines = []
-    metric_keys = [k for k in keys if k.startswith(("image_", "pixel_", "pro", "auroc_class"))]
+    metric_keys = [k for k in keys if k.startswith(("image_", "pixel_", "pro", "auroc_class", "recall_"))]
     for ds in datasets:
         lines.append(f"== {ds} ==")
         for m in methods:
@@ -297,9 +310,11 @@ def main() -> None:
 
     # run every (extractor, scale) any enabled method needs
     needed = sorted({part for m in methods for part in parts_of(m)})
+    global RGB
     for ext_name in sorted({e for e, _ in needed}):
         extractor = build_extractor(cfg["extractors"][ext_name], DEVICE)
         for ds, (rows, tasks, crop) in datasets.items():
+            RGB = bool(cfg[ds].get("rgb", False))
             ds_seeds = cfg[ds].get("seeds", seeds)
             for e, sc in needed:
                 if e == ext_name:

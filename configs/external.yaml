@@ -19,6 +19,12 @@ texturead:                      # Texture-AD Wafer (Lei et al., arXiv:2409.06367
   crop: 0
   seeds: [0]                    # bank seeds; 14 subclasses x 2 photo folds give the spread
 
+mvtec:                          # MVTec AD (Bergmann et al., CVPR 2019): general benchmark, color
+  root: /autofs/space/crater_001/projects/micropath/semi/MVTec
+  rgb: true
+  crop: 0
+  seeds: [0]
+
 output:
   dir: /autofs/space/crater_001/projects/micropath/semi/outputs/external   # manifests
 
