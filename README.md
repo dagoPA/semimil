@@ -11,20 +11,20 @@ Hospital and Harvard Medical School · `dpulido@mgh.harvard.edu`
 Oliverio Cruz-Mejía · National Autonomous University of Mexico (UNAM) ·
 `oliverio.cruz.mejia@comunidad.unam.mx`
 
-![Graphical abstract: a bag of image patches is embedded by a frozen DINOv2
-backbone; each patch feature is scored by its distance to a memory bank of normal
-patches, giving an anomaly map and an image AUROC of 0.972 with no labels and no
-training](docs/graphical_abstract.png)
+![Graphical abstract: rare normal structures set the 1 % false-alarm threshold and
+hide small defects; the detector reads two blocks of a frozen DINOv2 against an
+exhaustive memory of normal tokens and raises sensitivity at specificity 0.99 from
+0.79 to 0.94 on MIIC, and from 0.52 to 0.84 on the smallest
+defects](docs/graphical_abstract.png)
 
-Reproducible code for the paper, revised in October 2026 after the pre-screening
-at *IEEE Latin America Transactions*.
+Reproducible code for the paper.
 Every table and figure in the paper is produced by a YAML-driven script in
 [`scripts/`](scripts) reading a config in [`configs/`](configs) — no command-line
 arguments, for reproducibility.
 
 ---
 
-## Revision (October 2026): why small defects are missed, and a fix
+## Why small defects are missed, and a fix
 
 At a 1 % false-positive rate the baseline detector below misses about half of the
 defects smaller than 0.1 % of the image. The threshold is set by a few normal test
@@ -228,8 +228,8 @@ Each result maps to one script + one config (`uv run python scripts/<x>.py`):
 | Nested selection | `analysis/fuse_nested_layers.py`, `analysis/fuse_nested_fullbank.py` | — |
 | Recent methods + paired bootstrap | `sota/` wrappers, `analysis/compare_sota.py` | — |
 | **External datasets** (manifests, evaluation) | `prepare_external.py`, `run_external.py` | `external.yaml`, `external_full.yaml` |
-| Threshold diagnosis figure | `analysis/plot_threshold_diagnosis.py` | — |
-| Figures | `plot_dataset_overview.py`, `plot_sankey.py`, `plot_comparison.py`, `plot_ranking.py`, `plot_epochsel.py`, `plot_deployment_budget.py`, `plot_graphical_abstract.py` | — |
+| Threshold diagnosis figure, graphical abstract | `analysis/plot_threshold_diagnosis.py`, `analysis/plot_graphical_abstract.py` | — |
+| Figures | `plot_dataset_overview.py`, `plot_sankey.py`, `plot_comparison.py`, `plot_ranking.py`, `plot_epochsel.py`, `plot_deployment_budget.py` | — |
 
 > **Paths.** Configs point to the shared project space
 > (`/autofs/space/crater_001/projects/micropath/semi`) for data and outputs;
