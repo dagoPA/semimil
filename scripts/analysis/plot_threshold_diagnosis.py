@@ -7,7 +7,8 @@ ground-truth contour, and whether the proposed detector (block 8 + pooled block 
 exhaustive banks) catches them at its own 1 % operating point.
 
 numpy + PIL only (runs on the login node):  python3 -I scripts/analysis/plot_threshold_diagnosis.py
-Writes outputs/diagnostics/threshold_diagnosis.png and the manuscript's figs/ copy.
+Writes outputs/diagnostics/threshold_diagnosis.png (6 x 2) and a compact 4 x 2 teaser
+for the manuscript (figs/threshold_diagnosis.png).
 """
 import glob
 
@@ -89,8 +90,28 @@ def main():
         lab = '%.3f%% area: %s' % (areas[i], 'caught' if ok else 'still missed')
         fig.paste(tile(abn[i], lab, masks[i], (120, 255, 120) if ok else (255, 160, 160)),
                   (PAD + j * (T + PAD), y0 + HEAD))
-    for o in OUTS:
-        fig.save(o)
+    fig.save(OUTS[0])
+
+    # compact single-column teaser for the manuscript (first page): 4 x 2 tiles
+    n, t, pad, head = 4, 300, 10, 44
+    tf = ImageFont.truetype(BOLD, 22)
+    W2, H2 = n * (t + pad) + pad, 2 * (head + t + pad) + pad
+    fig2 = Image.new('RGB', (W2, H2), 'white')
+    d2 = ImageDraw.Draw(fig2)
+    d2.text((pad, 10), '(a) Normal images that set the threshold', font=tf, fill='black')
+    for j, i in enumerate(top[:n]):
+        im = tile(norm[i], 'normal, %.1f > %.1f' % (base[i], thr_b))
+        fig2.paste(im.resize((t, t), Image.BILINEAR), (pad + j * (t + pad), head))
+    y1 = head + t + pad
+    d2.text((pad, y1 + 10), '(b) Small defects missed by the baseline', font=tf, fill='black')
+    still = [i for i in missed if i not in caught]
+    show = caught[:n - 1] + still[:1]  # not only successes: one defect is still missed
+    for j, i in enumerate(show):
+        ok = prop[nn + i] >= thr_p
+        im = tile(abn[i], '%.3f%%: %s' % (areas[i], 'caught' if ok else 'missed'), masks[i],
+                  (120, 255, 120) if ok else (255, 160, 160))
+        fig2.paste(im.resize((t, t), Image.BILINEAR), (pad + j * (t + pad), y1 + head))
+    fig2.save(OUTS[1])
     print('threshold baseline %.2f, missed small %d, caught by proposed %d' % (thr_b, len(missed), len(caught)))
 
 
