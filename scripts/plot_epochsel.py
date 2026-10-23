@@ -3,7 +3,7 @@
 
 Shows why the literature numbers on MIIC are optimistic: validated on the full
 test each epoch, the AUROC swings widely; the BEST epoch (selected using the test,
-as ref [14] does) reaches the reported value, while any fixed/last checkpoint sits
+as Barusco et al. do) reaches the reported value, while any fixed/last checkpoint sits
 well below. Our one-class DINOv2 detector (red line) matches or exceeds every peak
 WITHOUT ever using the test for model selection.
 
@@ -74,7 +74,7 @@ def main() -> None:
                     fontsize=8, color=MUTED)
         # label the literature line at the left edge (best/last markers sit
         # on the curve, right/interior, so this never collides with them)
-        ax.text(1.0, lit - 0.006, f"reported [14]: {lit:.3f}",
+        ax.text(1.0, lit - 0.006, f"reported: {lit:.3f}",
                 ha="left", va="top", fontsize=7.5, color=MUTED, style="italic")
 
         ax.set_title(TITLE[name], fontsize=11, color=INK, pad=8)
@@ -95,7 +95,7 @@ def main() -> None:
         Line2D([0], [0], color=STEEL, lw=1.7, marker="o", ms=4, mfc=STEEL,
                mec="white", label="AUROC per epoch (baseline)"),
         Line2D([0], [0], color=MUTED, lw=1.2, ls=(0, (5, 3)),
-               label="reported by [14]"),
+               label="reported by Barusco et al."),
         Line2D([0], [0], color=RED, lw=1.7,
                label=f"DINOv2 one-class (ours), no selection on test ({ref:.3f})"),
         Line2D([0], [0], color=STEEL, lw=0, marker="o", ms=9, mfc=STEEL,
@@ -105,10 +105,10 @@ def main() -> None:
     ]
     fig.legend(handles=handles, loc="lower center", ncol=3, frameon=False,
                fontsize=8, bbox_to_anchor=(0.5, -0.06))
-    fig.suptitle("Reported AUROC depends on selecting the epoch on the test set",
-                 fontsize=11.5, color=INK, y=1.0)
+    # no title inside the figure: the journal puts the title in the caption
     fig.tight_layout(rect=(0, 0.02, 1, 0.98))
-    fig.savefig(OUT, dpi=150, bbox_inches="tight", facecolor="white")
+    fig.savefig(OUT, dpi=300, bbox_inches="tight", facecolor="white")
+    fig.savefig(OUT.with_suffix(".pdf"), bbox_inches="tight", facecolor="white")  # vector, journal artwork
     print(f"saved -> {OUT}")
 
 

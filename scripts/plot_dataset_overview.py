@@ -60,8 +60,7 @@ def main() -> None:
     picks = [areas[0], areas[len(areas) // 2], areas[-1]]
 
     fig, axes = plt.subplots(2, N_COL, figsize=(9.6, 6.9))
-    fig.suptitle("MIIC — integrated-circuit microscopy images (512×512, grayscale)",
-                 fontsize=12, color=INK, y=0.975)
+    # no title inside the figure: the journal puts the title in the caption
 
     for j in range(N_COL):
         ax = axes[0, j]
@@ -83,7 +82,8 @@ def main() -> None:
 
     fig.tight_layout(rect=(0, 0, 1, 0.955))
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(OUT, dpi=200, bbox_inches="tight", facecolor="white")
+    fig.savefig(OUT, dpi=300, bbox_inches="tight", facecolor="white")
+    fig.savefig(OUT.with_suffix(".pdf"), dpi=300, bbox_inches="tight", facecolor="white")  # journal artwork
     print(f"saved -> {OUT}  (defect sizes: "
           f"{', '.join(f'{f * 100:.2f}%' for f, _, _ in picks)})")
 

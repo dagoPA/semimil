@@ -99,10 +99,10 @@ def main() -> None:
                label="Baselines / literature  (‡ reproduced)"),
     ]
     ax.legend(handles=handles, loc="lower right", frameon=False, fontsize=8.5)
-    ax.set_title("Method ranking on the real test set (n=1388, 116 defective)",
-                 fontsize=11, color=INK, pad=10)
+    # no title inside the figure: the journal puts the title in the caption
     fig.tight_layout()
-    fig.savefig(OUT, dpi=150, bbox_inches="tight", facecolor="white")
+    fig.savefig(OUT, dpi=300, bbox_inches="tight", facecolor="white")
+    fig.savefig(OUT.with_suffix(".pdf"), bbox_inches="tight", facecolor="white")  # vector, journal artwork
     print(f"saved -> {OUT}")
 
 

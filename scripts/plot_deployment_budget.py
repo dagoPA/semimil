@@ -152,6 +152,7 @@ def main() -> None:
             ax.set_ylim(lo, hi)
     fig.tight_layout(w_pad=1.8)
     fig.savefig(OUT, dpi=300, bbox_inches="tight", facecolor="white")
+    fig.savefig(OUT.with_suffix(".pdf"), bbox_inches="tight", facecolor="white")  # vector, journal artwork
     print(f"saved -> {OUT}")
 
 

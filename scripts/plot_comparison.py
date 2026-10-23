@@ -160,12 +160,10 @@ def main() -> None:
         for j in range(4):
             axes[r, j].set_xticks([])
             axes[r, j].set_yticks([])
-    fig.suptitle(
-        "One-class detector vs. attention-MIL on the same real defects", y=1.0
-    )
+    # no title inside the figure: the journal puts the title in the caption
     fig.tight_layout()
     out = ASSETS / "comparison.png"
-    fig.savefig(out, dpi=120, bbox_inches="tight")
+    fig.savefig(out, dpi=300, bbox_inches="tight")
     print(f"saved -> {out}")
 
 
