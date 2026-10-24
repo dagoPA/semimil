@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 R = Path('/autofs/space/crater_001/projects/micropath/semi')
 RUNS = {'alarm': R / 'outputs/acquire_alarm', 'random': R / 'outputs/acquire_random_s0'}  # same initial memory
 RANDOM_SEEDS = [R / f'outputs/acquire_random_s{k}' for k in range(3)]
+ALARM_SEEDS = [R / 'outputs/acquire_alarm', R / 'outputs/acquire_alarm_s1']
 REPS = ['L8', 'L10_pool3']
 EXH = {'L8': R / 'outputs/bigbank_L8/raw/n23688.npz', 'L10_pool3': R / 'outputs/bigbank_L10_pool3/raw/n23688.npz'}
 BASELINE = {'sens_spec99': 0.787, 'sens_small': 0.523, 'auroc': 0.975}  # 100k-token bank, 3 seeds (paper)
@@ -98,8 +99,13 @@ def main():
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.4))
     for ax, (k, lab, refk) in zip(axes, [(1, 'Sensitivity at specificity 0.99', 'sens_spec99'),
                                          (2, 'Small-defect sensitivity', 'sens_small'), (0, 'Image AUROC', 'auroc')]):
-        xs = sorted(curves['alarm'])
-        ax.plot(xs, [curves['alarm'][m][k] for m in xs], marker='o', ms=4, color='#c53030', label='alarm-driven')
+        for j, run in enumerate(ALARM_SEEDS):
+            if not sizes(run):
+                continue
+            ca = {m: metrics(fused([run / 'raw' / f'{r}_n{m}.npz' for r in REPS])) for m in sizes(run)}
+            xs = sorted(ca)
+            ax.plot(xs, [ca[m][k] for m in xs], marker='o', ms=4, color='#c53030', ls='-' if j == 0 else '--',
+                    label='alarm-driven, initial memory %d' % (j + 1))
         xr = sorted(set.intersection(*[set(c) for c in seeds])) if seeds else []
         if xr:
             v = np.array([[c[m][k] for m in xr] for c in seeds])

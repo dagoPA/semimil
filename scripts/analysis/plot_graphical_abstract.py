@@ -98,7 +98,7 @@ a('<path class="ln" d="M700,140 L640,172"/><path class="ln" d="M800,140 L860,172
 box(525, 176, 215, 62, '#dbe8f6', 'sharp block')
 box(760, 176, 215, 62, '#fbe5d0', 'smooth block')
 a('<path class="ln" d="M632,238 L632,268"/><path class="ln" d="M868,238 L868,268"/>')
-box(525, 272, 450, 100, '#f2f2f2', 'Every normal token', '32.4 M, exact search')
+box(525, 272, 450, 100, '#f2f2f2', 'Covers rare normals', 'all tokens or a 1 % coreset')
 a('<path class="ln" d="M750,372 L750,402"/>')
 box(585, 406, 330, 62, '#e6f2e6', 'Calibrated fusion')
 a('<text class="s" x="750" y="565" style="fill:#111">No labels, no training</text>')
