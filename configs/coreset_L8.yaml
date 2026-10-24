@@ -1,0 +1,32 @@
+# Greedy coreset vs random subsampling vs exhaustive bank (scripts/run_coreset.py, no CLI args).
+seed: 42                  # calibration set (same as run_bigbank)
+input_size: 518
+batch_size: 32
+q_chunk: 4096
+b_chunk: 150000
+
+coreset:
+  budgets: [100000, 0.01]   # absolute tokens or a fraction of all pool tokens (1 % = PatchCore-1%)
+  proj_dim: 128             # PatchCore's random projection
+  n_start: 10
+  seed: 0
+  log_every: 10000
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+model:
+  type: dinov2
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+  layers: [7]
+  pool: 0
+
+calibration:
+  n_images: 200
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/coreset_L8

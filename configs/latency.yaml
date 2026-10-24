@@ -1,0 +1,10 @@
+# Inspection latency per image vs memory size (scripts/run_latency.py, no CLI args).
+input_size: 518
+tokens_per_image: 1369
+dim: 384
+b_chunk: 150000
+reps: 5
+memory_tokens: [100000, 324289, 1369000, 5476000, 32428872]   # greedy 100k, PatchCore-1 %, 1,000 / 4,000 / 23,688 images
+model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [7], pool: 0}
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/latency

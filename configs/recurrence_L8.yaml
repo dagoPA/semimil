@@ -1,0 +1,27 @@
+# Recurrence scoring: k-th nearest distinct image (scripts/run_recurrence.py, no CLI args).
+seed: 42                  # calibration set (same as run_bigbank)
+input_size: 518
+batch_size: 32
+q_chunk: 4096
+imgs_per_block: 110         # images per bank block (tokens of one image are contiguous)
+ks: [1, 2, 3, 5]
+
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+model:
+  type: dinov2
+  dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+  layers: [7]
+  pool: 0
+
+calibration:
+  n_images: 200
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/recurrence_L8

@@ -1,0 +1,33 @@
+# Alarm-driven acquisition of normals (scripts/run_acquire.py, no CLI args).
+seed: 42                  # calibration split, same as run_bigbank
+bank_seed: 1              # random image order; the random strategy walks it (= run_bigbank's nested banks)
+input_size: 518
+batch_size: 32
+q_chunk: 4096             # query tokens per block (precise path)
+p_chunk: 16384            # pool tokens per block (fast path)
+b_chunk: 100000           # new memory tokens per block
+
+strategy: random          # alarm | random
+n_initial: 250            # images in the initial memory (the same for every strategy with this bank_seed)
+rounds: [125, 125, 125, 125, 125, 125, 250, 250, 250, 250, 250, 250, 250, 250, 500, 500, 500, 500, 500, 500]   # memory 250 -> 6,000 images; random banks plateau near 4,000
+check: true               # fast fp16 pool path vs fp32 cdist on 2048 tokens
+resume: true              # continue from state.pt if a job is resubmitted
+
+representations:          # the proposed detector: selection and metrics use the fused z-score
+  - name: L8
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [7], pool: 0}
+  - name: L10_pool3
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [9], pool: 3}
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+calibration:
+  n_images: 200
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/acquire_random_s1

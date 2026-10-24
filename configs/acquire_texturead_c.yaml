@@ -1,0 +1,20 @@
+# Alarm-driven vs random acquisition on Texture-AD wafers (scripts/run_acquire_texturead.py, no CLI args).
+input_size: 518
+batch_size: 32
+fractions: [0.04, 0.06, 0.08, 0.10, 0.12, 0.15, 0.20, 0.25, 0.30, 0.40]   # memory as a fraction of the pool
+calib_photo_frac: 0.15     # share of the other fold's photographs held out for calibration
+seeds: [0, 1, 2]           # initial memories; each is paired between the two strategies
+skip_classes: [9, 12]      # three photographs per fold: too few for pool + calibration
+
+representations:
+  - name: L8
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [7], pool: 0}
+  - name: L10_pool3
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [9], pool: 3}
+
+data:
+  manifest: /autofs/space/crater_001/projects/micropath/semi/outputs/external/texturead.csv
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/acquire_texturead/part_c
+classes: [7,2,8]

@@ -1,0 +1,20 @@
+# Inspection memory under drift on Texture-AD wafers (scripts/run_stream.py, no CLI args).
+seed: 0
+input_size: 518
+batch_size: 32
+n_memory: 3               # first photographs (in capture order) whose normal crops form the memory
+n_calib: 2                # next photographs: calibration normals (z-scale and alarm threshold)
+min_stream: 5             # subclasses with fewer stream photographs are skipped (9 and 12 have 6 photos)
+
+representations:
+  - name: L8
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [7], pool: 0}
+  - name: L10_pool3
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [9], pool: 3}
+
+data:
+  manifest: /autofs/space/crater_001/projects/micropath/semi/outputs/external/texturead.csv
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/stream_smoke
+classes: [8, 10]
