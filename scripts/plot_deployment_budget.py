@@ -6,8 +6,8 @@ Three panels from scripts/deployment_budget.py:
   (b) AUROC vs pool contamination with synthetic anomalies,
   (c) the same with real anomalies held out of the test set.
 
-Identity is encoded by BOTH color and marker shape (filled circle = raw bank,
-open square = self-cleaned), so the panels never rely on color alone. The
+Identity is encoded by BOTH color and marker shape (filled circle = raw memory bank,
+open square = filtered), so the panels never rely on color alone. The
 palette is the one used by the other figures, checked for CVD separation.
 
     uv run python scripts/plot_deployment_budget.py
@@ -28,8 +28,8 @@ ROOT = Path("/autofs/space/crater_001/projects/micropath/semi/outputs")
 RES = ROOT / "deployment_budget/results.json"
 OUT = ROOT / "report/assets/budget.png"
 
-RED = "#cf4128"      # raw bank
-STEEL = "#2f6a9c"    # self-cleaned
+RED = "#cf4128"      # raw memory bank
+STEEL = "#2f6a9c"    # filtered
 INK = "#1a1c20"
 MUTED = "#566070"
 GRID = "#e4e7ec"
@@ -76,11 +76,11 @@ def main() -> None:
     ax.fill_between(ks, mu - sd, mu + sd, color=RED, alpha=0.16, lw=0, zorder=2)
     ax.plot(ks, mu, color=RED, lw=2.0, marker="o", ms=5.5, mec="white", mew=1.2, zorder=4)
     ax.axhline(full, color=MUTED, lw=1.0, ls="--", alpha=0.7, zorder=1)
-    ax.text(ks[-1], full + 0.006, f"full bank (k={ks[-1]}): {full:.3f}",
+    ax.text(ks[-1], full + 0.006, f"k = {ks[-1]}: {full:.3f}",
             color=MUTED, fontsize=7.6, va="bottom", ha="right")
 
-    # the operationally meaningful point: the smallest bank that already beats the
-    # best baseline trained on all 23,888 normals
+    # the operationally meaningful point: the smallest memory bank that already
+    # outperforms the best classical baseline trained on all 23,888 normal images
     ax.axhline(BEST_BASELINE, color=STEEL, lw=1.0, ls=":", alpha=0.9, zorder=1)
     ax.text(ks[-1], BEST_BASELINE + 0.005, f"{BEST_BASELINE_NAME}: {BEST_BASELINE:.3f}",
             color=STEEL, fontsize=7.6, va="bottom", ha="right")
@@ -88,7 +88,7 @@ def main() -> None:
     if cross is not None:
         mc = mu[ks.index(cross)]
         ax.plot([cross], [mc], marker="o", ms=12, mfc="none", mec=RED, mew=1.8, zorder=5)
-        ax.annotate(f"k={cross}: {mc:.3f}\nalready beats the baseline",
+        ax.annotate(f"k = {cross}: {mc:.3f}\nabove the best baseline",
                     xy=(cross, mc), xytext=(cross * 1.6, mc - 0.085),
                     color=RED, fontsize=8.2, fontweight="bold",
                     arrowprops={"arrowstyle": "-", "color": RED, "lw": 1.0, "alpha": 0.6})
@@ -96,7 +96,7 @@ def main() -> None:
     ax.set_xscale("log", base=2)
     ax.set_xticks(ks)
     ax.set_xticklabels([str(k) for k in ks], fontsize=7.6)
-    ax.set_xlabel("normal images in the bank (k)", color=INK, fontsize=9)
+    ax.set_xlabel("normal images in the memory bank (k)", color=INK, fontsize=9)
     ax.set_ylabel("Image AUROC", color=INK, fontsize=9)
     ax.set_title("(a) Normal-image budget", color=INK, fontsize=9.8,
                  fontweight="bold", pad=8)
@@ -116,8 +116,8 @@ def main() -> None:
         rates = sorted({r["rate"] for r in rows})
         x = np.array(rates) * 100
         for clean, color, marker, mfc, label in (
-            (False, RED, "o", RED, "raw bank"),
-            (True, STEEL, "s", "white", "self-cleaning (drops 10 %)"),
+            (False, RED, "o", RED, "raw memory bank"),
+            (True, STEEL, "s", "white", "filtered (drops 10 %)"),
         ):
             sel = [[r for r in rows if r["rate"] == q and r["clean"] == clean] for q in rates]
             if not all(sel):

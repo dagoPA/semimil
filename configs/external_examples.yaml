@@ -1,0 +1,32 @@
+# Figure of external-dataset examples (scripts/plot_external_examples.py, no CLI args).
+# One row per dataset: two defect-free images, then four defective ones with the
+# reference contour. Each defective image is the one with the median defect area among
+# `candidates` images of its class drawn with `seed`, so the figure is deterministic.
+
+seed: 0
+candidates: 40
+manifests: /autofs/space/crater_001/projects/micropath/semi/outputs/external   # prepare_external.py
+output: /autofs/space/crater_001/projects/micropath/semi/outputs/report/latex/figs/external_examples.png
+
+datasets:
+  - name: Carinthia-S
+    subtitle: production SEM
+    manifest: carinthia.csv
+    crop: 8                      # the border crop used in every analysis (configs/external.yaml)
+    normal: ["6", "6"]           # class of each defect-free example
+    defective: ["1", "3", "4", "5"]
+    label: "class {cls}"
+  - name: Texture-AD Wafer
+    subtitle: optical, patterned
+    manifest: texturead.csv
+    crop: 0
+    normal: ["1", "6"]
+    defective: ["2", "4", "8", "13"]
+    label: "subclass {cls}"
+  - name: MVTec AD
+    subtitle: industrial objects
+    manifest: mvtec.csv
+    crop: 0
+    normal: ["screw", "transistor"]
+    defective: ["screw", "transistor", "carpet", "metal_nut"]
+    label: "{cls}"

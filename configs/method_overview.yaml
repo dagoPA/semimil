@@ -1,0 +1,40 @@
+# Method figure (scripts/plot_method_overview.py, no CLI args): the proposed detector on
+# one test image, with the real token maps, memory tokens, distance maps and image score.
+
+example: test_abnormal_00039       # the small defect of Fig. 1 and the graphical abstract
+input_size: 518
+dino_name: vit_small_patch14_reg4_dinov2.lvd142m
+pca_normals: 20                    # training normals that join the example in the token PCA
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+# exhaustive-memory runs (scripts/run_bigbank.py) of the two token representations
+maps:
+  r1: /autofs/space/crater_001/projects/micropath/semi/outputs/bigbank_L8/raw/n23688.npz
+  r2: /autofs/space/crater_001/projects/micropath/semi/outputs/bigbank_L10_pool3/raw/n23688.npz
+
+# memory tokens shown in the figure: training image, token row and column, role.
+# "nearest" is the nearest memory token of the example's highest-scoring defect token
+# (row 7, column 9 of the block-8 map), found by exact search over the exhaustive block-8
+# memory; "rare" is the nearest memory token of its highest-scoring normal structure (a wide
+# metal plane). The other tokens are arbitrary.
+example_token: [7, 9]
+memory_tokens:
+  - [train_normal_12233, 11, 10, nearest]
+  - [train_normal_00731, 20, 14, ""]
+  - [train_normal_19446, 16, 9, ""]
+  - [train_normal_05518, 8, 22, ""]
+  - [train_normal_12805, 9, 29, rare]
+  - [train_normal_15302, 27, 6, ""]
+  - [train_normal_04159, 33, 21, ""]
+  - [train_normal_21077, 12, 30, ""]
+  - [train_normal_09341, 28, 16, ""]
+setup_images: [train_normal_00731, train_normal_15302, train_normal_21077]
+
+cache: /autofs/space/crater_001/projects/micropath/semi/outputs/method_overview/token_pca.npz
+output: /autofs/space/crater_001/projects/micropath/semi/outputs/report/latex/figs/method_overview.pdf
