@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-"""Side-by-side qualitative comparison of the one-class detector and attention-MIL.
+"""Side-by-side qualitative comparison of the baseline detector and attention-MIL.
 
-Columns: original | ground truth (red contour) | one-class detector map |
+Columns: original | ground truth (red contour) | baseline detector map |
 attention-MIL map. The rows are the largest real defects that attention-MIL detects,
 so both methods are shown where both succeed. The one-class map is the stitched
 token-distance map of the main-text baseline detector (first seed) and the MIL map is
@@ -78,7 +78,7 @@ def main() -> None:
 
     n = len(picks)
     fig, axes = plt.subplots(n, 4, figsize=(12, 3.05 * n))
-    cols = ["original", "ground truth", "one-class detector", "attention-MIL"]
+    cols = ["original", "ground truth", "baseline detector", "attention-MIL"]
     for j, c in enumerate(cols):
         axes[0, j].set_title(c, fontsize=12)
     for r, k in enumerate(picks):

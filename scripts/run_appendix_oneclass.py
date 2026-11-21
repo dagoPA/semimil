@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""One-class detectors of Appendix B under the protocol of the main text.
+"""Baseline detectors of Appendices A and B under the protocol of the main text.
 
 Each run builds its memory banks exactly as scripts/run_tiled.py builds the baseline
-detector (one tile per image, seeds 0-2, 1,000 images from the training normals outside
-the 200 calibration images, 256 random tokens per image, then 100,000 tokens at random),
-so the DINOv2 run reproduces the main-text baseline and the other extractors and the
-ablations differ from it only in the factor they change.
+detector (one tile per image, seeds 0-2, 1,000 normal training images outside the 200
+calibration images, 256 random tokens per image, then 100,000 tokens at random), so the
+DINOv2 run reproduces the main-text baseline and the other extractors and input sizes
+differ from it only in the factor they change.
 
 For every run and seed it writes raw/<name>_s<seed>.npz with the image scores of the
 real MIIC test (normal then defective, sorted by name), the per-token nearest-neighbor

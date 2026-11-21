@@ -1,6 +1,6 @@
-# semimil — Rare Normals Set the Threshold
+# semimil — Rare Normal Structures Set the Decision Threshold
 
-**Exhaustive-memory anomaly detection of small defects in integrated-circuit
+**Coverage-driven memory banks for detecting small defects in integrated-circuit
 microscopy.** (The first version of this work was titled *The Feature Extractor
 Decides*; its results are kept below as the baseline.)
 
@@ -11,10 +11,10 @@ Hospital and Harvard Medical School · `dpulido@mgh.harvard.edu`
 Oliverio Cruz-Mejía · National Autonomous University of Mexico (UNAM) ·
 `oliverio.cruz.mejia@comunidad.unam.mx`
 
-![Graphical abstract: rare normal structures set the 1 % false-alarm threshold and
-hide small defects; the detector reads two blocks of a frozen DINOv2 against an
-exhaustive memory of normal tokens and raises sensitivity at specificity 0.99 from
-0.79 to 0.94 on MIIC, and from 0.52 to 0.84 on the smallest
+![Graphical abstract: rare normal structures set the decision threshold at 1 % false
+alarms, and small defects fall below it; the detector compares two blocks of a frozen
+DINOv2 with a memory bank of every normal token and raises sensitivity at specificity
+0.99 from 0.79 to 0.94 on MIIC, and from 0.52 to 0.84 on the smallest
 defects](docs/graphical_abstract.png)
 
 Reproducible code for the paper.
@@ -248,8 +248,8 @@ All are publicly available; see the paper for licensing and access.
 
 ```bibtex
 @article{pulido2025icmil,
-  title   = {Rare Normals Set the Threshold: Exhaustive-Memory Anomaly
-             Detection of Small Defects in Integrated-Circuit Microscopy},
+  title   = {Rare Normal Structures Set the Decision Threshold: Coverage-Driven
+             Memory Banks for Detecting Small Defects in Integrated-Circuit Microscopy},
   author  = {Pulido Arias, Dagoberto and Cruz-Mej{\'i}a, Oliverio},
   journal = {Submitted},
   year    = {2026}
@@ -258,6 +258,6 @@ All are publicly available; see the paper for licensing and access.
 
 ## Notes
 
-The manuscript source (LaTeX, IEEE template) is under `outputs/report/latex/` in
+The manuscript source (LaTeX, Elsevier elsarticle template) is under `outputs/report/latex/` in
 the project space. All research design, experiments, analyses, and
 conclusions are the authors' own and were verified by them.

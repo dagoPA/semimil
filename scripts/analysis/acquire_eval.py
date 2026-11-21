@@ -105,20 +105,22 @@ def main():
             ca = {m: metrics(fused([run / 'raw' / f'{r}_n{m}.npz' for r in REPS])) for m in sizes(run)}
             xs = sorted(ca)
             ax.plot(xs, [ca[m][k] for m in xs], marker='o', ms=4, color='#c53030', ls='-' if j == 0 else '--',
-                    label='alarm-driven, initial memory %d' % (j + 1))
+                    label='alarm-driven, initial memory bank %d' % (j + 1))
         xr = sorted(set.intersection(*[set(c) for c in seeds])) if seeds else []
         if xr:
             v = np.array([[c[m][k] for m in xr] for c in seeds])
             ax.plot(xr, v.mean(0), marker='s', ms=4, color='#8c8c8c', label='random (%d orders)' % len(seeds))
             ax.fill_between(xr, v.min(0), v.max(0), color='#8c8c8c', alpha=0.2, lw=0)
-        ax.axhline(ref[k], color='#2b6cb0', ls='--', lw=1.2, label='all 23,688 images')
-        ax.axhline(BASELINE[refk], color='#444', ls=':', lw=1.2, label='100k-token bank')
-        ax.set_xscale('log'); ax.set_xlabel('normal images in memory'); ax.set_title(lab, fontsize=10)
+        ax.axhline(ref[k], color='#2b6cb0', ls='--', lw=1.2, label='full memory bank (23,688 images)')
+        ax.axhline(BASELINE[refk], color='#444', ls=':', lw=1.2, label='100k-token memory bank')
+        ax.set_xscale('log'); ax.set_xlabel('normal images in the memory bank'); ax.set_title(lab, fontsize=10)
         ax.set_xticks([250, 500, 1000, 2000, 4000, 6000]); ax.set_xticklabels(['250', '500', '1k', '2k', '4k', '6k'])
         ax.minorticks_off()
         ax.grid(alpha=0.3)
-    axes[0].legend(fontsize=8, frameon=False)
-    fig.tight_layout()
+    handles, labels = axes[0].get_legend_handles_labels()  # one legend below the panels
+    fig.legend(handles, labels, loc='lower center', ncol=3, fontsize=9, frameon=False,
+               bbox_to_anchor=(0.5, -0.03))
+    fig.tight_layout(rect=(0, 0.12, 1, 1))
     out_png = R / 'outputs/report/assets/acquisition.png'
     fig.savefig(out_png, dpi=300, bbox_inches='tight', facecolor='white')
     fig.savefig(out_png.with_suffix('.pdf'), bbox_inches='tight', facecolor='white')

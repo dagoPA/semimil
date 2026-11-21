@@ -4,8 +4,8 @@
 Shows why the literature numbers on MIIC are optimistic: validated on the full
 test each epoch, the AUROC swings widely; the BEST epoch (selected using the test,
 as Barusco et al. do) reaches the reported value, while any fixed/last checkpoint sits
-well below. Our one-class DINOv2 detector (red line) matches or exceeds every peak
-WITHOUT ever using the test for model selection.
+well below. The baseline detector (red line), which has no checkpoint to select,
+matches or exceeds every peak without using the test set.
 
     uv run python scripts/plot_epochsel.py
 """
@@ -26,7 +26,7 @@ ROOT = Path("/autofs/space/crater_001/projects/micropath/semi/outputs")
 ES = ROOT / "anomalib_epochsel"
 OUT = ROOT / "report/assets/epochsel.png"
 
-RED = "#cf4128"      # our method
+RED = "#cf4128"      # baseline detector
 STEEL = "#2f6a9c"    # baseline curve
 INK = "#1a1c20"
 MUTED = "#566070"
@@ -57,7 +57,7 @@ def main() -> None:
     summary = json.loads((ES / "summary.json").read_text())
     boot = {r["method"]: r for r in
             json.loads((ROOT / "appendix_b/stats/bootstrap.json").read_text())["results"]}
-    ref = boot["DINOv2 (one-class)"]["auroc"]
+    ref = boot["Baseline (DINOv2)"]["auroc"]
 
     fig, axes = plt.subplots(1, 3, figsize=(10.2, 3.7), sharey=True)
     axes[0].set_ylim(0.70, 1.005)
@@ -74,7 +74,7 @@ def main() -> None:
         best_y = s["best_epoch_auroc"]
         last_x, last_y = xs[-1], ys[-1]
 
-        # reference lines: literature (neutral dashed) and our method (red solid)
+        # reference lines: literature (neutral dashed) and baseline detector (red solid)
         ax.axhline(lit, color=MUTED, lw=1.2, ls=(0, (5, 3)), zorder=2)
         ax.axhline(ref, color=RED, lw=1.7, zorder=2)
 
@@ -116,11 +116,11 @@ def main() -> None:
 
     handles = [
         Line2D([0], [0], color=STEEL, lw=1.7, marker="o", ms=4, mfc=STEEL,
-               mec="white", label="AUROC per epoch (baseline)"),
+               mec="white", label="AUROC per epoch (reproduced method)"),
         Line2D([0], [0], color=MUTED, lw=1.2, ls=(0, (5, 3)),
                label="reported by Barusco et al."),
         Line2D([0], [0], color=RED, lw=1.7,
-               label=f"DINOv2 one-class (ours), no selection on test ({ref:.3f})"),
+               label=f"baseline detector, no selection on the test set ({ref:.3f})"),
         Line2D([0], [0], color=STEEL, lw=0, marker="o", ms=9, mfc=STEEL,
                mec="white", mew=1.4, label="best epoch (selected on the test set)"),
         Line2D([0], [0], color=STEEL, lw=0, marker="o", ms=8, mfc="white",
