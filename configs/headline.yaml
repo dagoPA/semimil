@@ -1,0 +1,30 @@
+# Headline figure (scripts/plot_headline.py, no CLI args): sensitivity at specificity 0.99 on
+# MIIC for every defective image and for the small defects, for the proposed detector, the
+# baseline detector and the recent methods. Points are means over seeds; the 95 % CIs come
+# from a stratified bootstrap of the first seed, as in Table 7 and Appendix C.
+
+spec: 0.99
+small_area_pct: 0.1                # small defects: below 0.1 % of the image
+bootstrap: 2000
+seed: 0
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+outputs: /autofs/space/crater_001/projects/micropath/semi/outputs
+
+# kind: proposed (fused z of the two exhaustive runs), baseline (run_tiled raw scores, one
+# file per seed) or sota (image_scores.csv per seed under outputs/sota/<path>)
+methods:
+  - {label: Proposed, kind: proposed, runs: [bigbank_L8, bigbank_L10_pool3]}
+  - {label: Baseline detector, kind: baseline, files: ["tiled/raw/g1_518_s0.npz", "tiled/raw/g1_518_s1.npz", "tiled/raw/g1_518_s2.npz"]}
+  - {label: Dinomaly, kind: sota, path: dinomaly/sep_it5000_r448}
+  - {label: SubspaceAD, kind: sota, path: subspacead/fullshot_all}
+  - {label: INP-Former, kind: sota, path: inp_former/single_ep200_n1000_r448}
+  - {label: AnomalyDINO, kind: sota, path: anomalydino/1000shot}
+  - {label: GLASS, kind: sota, path: glass/custom_ep640_n1000}
+
+output: /autofs/space/crater_001/projects/micropath/semi/outputs/report/latex/figs/headline.pdf
