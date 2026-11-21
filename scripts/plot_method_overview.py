@@ -202,8 +202,8 @@ def main() -> None:
         x = sx0 + i * sdx
         ov.add_patch(Polygon([(x, sy0), (x + 0.03, sy0 + 0.07), (x + 0.03, sy0 + sh + 0.07), (x, sy0 + sh)],
                              closed=True, fc="#ffffff", ec="#7f9cc0", lw=0.5, zorder=2))
-    ov.text((mx0 + mx1) / 2, my0 + 0.08, "frozen, 12 blocks", ha="center", va="bottom", fontsize=5.8,
-            color=NAVY)
+    ov.text((mx0 + mx1) / 2, my0 + 0.07, "12 blocks,\nfrozen", ha="center", va="bottom", fontsize=5.8,
+            color=NAVY, linespacing=1.1)
     arrow((0.95, 2.05), (1.12, 2.05))
     tap1, tap2 = (sx0 + 3 * sdx + 0.03, sy0 + 0.8), (sx0 + 4 * sdx + 0.03, sy0 + 0.3)
     ov.add_patch(Circle(tap1, 0.024, color=BLUE, zorder=4))
