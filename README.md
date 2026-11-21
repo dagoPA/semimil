@@ -204,9 +204,9 @@ Each result maps to one script + one config (`uv run python scripts/<x>.py`):
 | Data/defect-size analysis | `analyze_size.py` | — |
 | **One-class detector** (WRN50/DINOv2) | `run_patchcore.py` | `patchcore.yaml` |
 | **Attention-MIL** | `train_mil.py` | `mil.yaml` |
-| Cross-eval (real vs. synthetic) | `cross_eval.py` | `cross_eval.yaml` |
+| Appendix B one-class detectors (DINOv2, WRN50, DINOv2-domain, ablations) | `run_appendix_oneclass.py` | `appendix_oneclass.yaml` |
+| Appendix B tables (comparison, DeLong + Holm, real vs. synthetic, localization, ablations) | `analysis/appendix_b_stats.py` | — |
 | Domain SSL (negative result) | `pretrain_ssl.py` | `ssl.yaml` |
-| Multi-seed sweeps / ablations | `sweep.py` | `sweep.yaml` |
 | Baseline PaDiM | `run_padim.py` | `padim.yaml` |
 | Baseline DRAEM | `run_draem.py` | `draem.yaml` |
 | Baselines FastFlow/STFPM/CFA | `run_anomalib.py` | `anomalib.yaml` |
@@ -217,7 +217,7 @@ Each result maps to one script + one config (`uv run python scripts/<x>.py`):
 | DeLong test | `stats_tests.py` | — |
 | Holm correction | `holm.py` | — |
 | Bootstrap CIs | `bootstrap_ci.py` | — |
-| Localization (pixel AUROC + PRO) | `localization.py`, `localization_anomalib.py` | — |
+| Localization of the anomalib baselines (pixel AUROC + PRO) | `localization_anomalib.py` | — |
 | **MVTec AD generalization** | `run_mvtec.py` | `mvtec.yaml` |
 | Tiled / multi-scale detector (negative) | `run_tiled.py` | `tiled.yaml` |
 | Patch-level adaptation (negative) | `pretrain_patch.py`, `run_tiled.py` | `patch_ssl*.yaml`, `patch_eval_*.yaml` |

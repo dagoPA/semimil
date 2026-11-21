@@ -120,7 +120,10 @@ def main() -> None:
     neg = neg + [extra[i] for i in keep]
     test_norm = list_images(sorted(Path(raw, cfg["data"]["test_normal_dir"]).iterdir()))
     test_abn = list_images(sorted(Path(raw, cfg["data"]["test_abnormal_dir"]).iterdir()))
-    print(f"pos={len(pos)}  neg={len(neg)}  test_normal={len(test_norm)}  test_abn={len(test_abn)}")
+    syn_norm = list_images(sorted(raw.glob(cfg["data"]["syn_test_neg_glob"])))
+    syn_abn = list_images(sorted(raw.glob(cfg["data"]["syn_test_pos_glob"])))
+    print(f"pos={len(pos)}  neg={len(neg)}  test_normal={len(test_norm)}  "
+          f"test_abn={len(test_abn)}  synthetic test={len(syn_norm)}N/{len(syn_abn)}A")
 
     # --- precompute features (once) -------------------------------------------
     print("[features] extracting ...")
@@ -128,6 +131,8 @@ def main() -> None:
     Fneg, _ = precompute(neg, extractor, size, bs)
     Ftn, _ = precompute(test_norm, extractor, size, bs)
     Fta, _ = precompute(test_abn, extractor, size, bs)
+    Fsn, _ = precompute(syn_norm, extractor, size, bs)
+    Fsa, _ = precompute(syn_abn, extractor, size, bs)
     d = Fpos.shape[-1]
     print(f"[features] grid={grid}x{grid}  dim={d}")
 
@@ -177,8 +182,12 @@ def main() -> None:
     print(f"[train] best synthetic-val AUROC = {best_auroc:.4f}")
 
     # --- evaluate on REAL test ------------------------------------------------
-    pn, _ = predict(model, Ftn, device)
+    pn, attn_n = predict(model, Ftn, device)
     pa, attn_a = predict(model, Fta, device)
+    psn, _ = predict(model, Fsn, device)
+    psa, _ = predict(model, Fsa, device)
+    y_syn = np.array([0] * len(psn) + [1] * len(psa))
+    s_syn = np.concatenate([psn, psa])
     y_img = np.array([0] * len(pn) + [1] * len(pa))
     s_img = np.concatenate([pn, pa])
 
@@ -206,6 +215,8 @@ def main() -> None:
         "image_auprc": float(average_precision_score(y_img, s_img)),
         "pixel_auroc": float(roc_auc_score(px_true, px_pred)),
         "pixel_auprc": float(average_precision_score(px_true, px_pred)),
+        "synthetic_test_auroc": float(roc_auc_score(y_syn, s_syn)),
+        "synthetic_test_auprc": float(average_precision_score(y_syn, s_syn)),
         "n_pos": len(pos),
         "n_neg": len(neg),
         "grid": grid,
@@ -219,6 +230,15 @@ def main() -> None:
             w.writerow([p.name, 0, float(s)])
         for p, s in zip(test_abn, pa, strict=True):
             w.writerow([p.name, 1, float(s)])
+
+    with (out_dir / "synthetic_scores.csv").open("w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["name", "label", "score"])
+        for p, s in zip(syn_norm + syn_abn, s_syn, strict=True):
+            w.writerow([p.name, int(p in syn_abn), float(s)])
+    # attention of every real test image (normal then defective), for the qualitative figure
+    attn_test = np.concatenate([attn_n, attn_a]).reshape(-1, grid, grid)
+    np.savez_compressed(out_dir / "attention_test.npz", attention=attn_test.astype(np.float16))
 
     save_attn_viz(out_dir, test_abn, pa, amaps, cfg, size, raw)
 

@@ -162,8 +162,13 @@ def build_extractor(cfg_model: dict, device: str):
     if kind == "cnn":
         return PatchFeatureExtractor(cfg_model["backbone"], cfg_model["layers"], device)
     if kind == "dinov2":
+        # block indices select intermediate DINOv2 layers; layer names (layer2, layer3) in a
+        # shared config belong to the CNN backbone and leave DINOv2 on its final layer
+        layers = cfg_model.get("layers")
+        if layers and not all(isinstance(i, int) for i in layers):
+            layers = None
         return DINOv2FeatureExtractor(cfg_model["dino_name"], device, cfg_model.get("weights"),
-                                      cfg_model.get("layers"), cfg_model.get("pool", 0))
+                                      layers, cfg_model.get("pool", 0))
     raise ValueError(f"unknown model.type: {kind!r}")
 
 

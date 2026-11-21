@@ -19,7 +19,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-STATS = Path("/autofs/space/crater_001/projects/micropath/semi/outputs/stats")
+# Appendix B statistics under the protocol of the main text (scripts/analysis/appendix_b_stats.py)
+STATS = Path("/autofs/space/crater_001/projects/micropath/semi/outputs/appendix_b/stats")
 OUT = Path("/autofs/space/crater_001/projects/micropath/semi/outputs/report/assets/ranking.png")
 
 RED = "#cf4128"      # our methods

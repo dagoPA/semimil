@@ -1,0 +1,19 @@
+# Qualitative comparison of the one-class detector and attention-MIL
+# (scripts/plot_comparison.py, no CLI args). Both maps are read from stored runs: the
+# stitched token-distance maps of the main-text baseline detector (run_tiled.py, scale
+# g1_518, first seed) and the attention of the attention-MIL model (train_mil.py).
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"   # <stem>_mask.jpg
+
+one_class_maps: /autofs/space/crater_001/projects/micropath/semi/outputs/tiled/raw/g1_518_s0.npz
+mil_dir: /autofs/space/crater_001/projects/micropath/semi/outputs/mil/mil_dinov2
+
+display_size: 518     # pixels per panel
+sigma: 4.0            # Gaussian smoothing of both maps, in display pixels
+n_rows: 4             # largest defects that attention-MIL detects (p >= 0.5)
+
+output: /autofs/space/crater_001/projects/micropath/semi/outputs/report/assets/comparison.png

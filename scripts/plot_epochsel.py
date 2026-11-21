@@ -19,6 +19,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.lines import Line2D
 
 ROOT = Path("/autofs/space/crater_001/projects/micropath/semi/outputs")
@@ -35,13 +36,32 @@ ORDER = ["stfpm", "fastflow", "cfa"]
 TITLE = {"stfpm": "STFPM", "fastflow": "FastFlow", "cfa": "CFA"}
 
 
+def place_clear(fig, ax, label, xy, xs, ys):
+    """Annotate xy at the first offset whose text box stays off the per-epoch curve."""
+    fine = np.linspace(0, len(xs) - 1, 40 * len(xs))
+    curve = np.c_[np.interp(fine, range(len(xs)), xs), np.interp(fine, range(len(xs)), ys)]
+    for dx, dy in ((-4, -14), (-4, 10), (-4, -30), (-4, -46), (-4, -62)):
+        t = ax.annotate(label, xy, textcoords="offset points", xytext=(dx, dy), ha="right",
+                        fontsize=8, color=MUTED)
+        fig.canvas.draw()
+        box = t.get_window_extent().padded(5 * fig.dpi / 72)  # 5 pt around the text
+        px, py = ax.transData.transform(curve).T
+        if not ((px >= box.x0) & (px <= box.x1) & (py >= box.y0) & (py <= box.y1)).any():
+            return
+        t.remove()
+    ax.annotate(label, xy, textcoords="offset points", xytext=(-4, -14), ha="right",
+                fontsize=8, color=MUTED)
+
+
 def main() -> None:
     summary = json.loads((ES / "summary.json").read_text())
     boot = {r["method"]: r for r in
-            json.loads((ROOT / "stats/bootstrap.json").read_text())["results"]}
+            json.loads((ROOT / "appendix_b/stats/bootstrap.json").read_text())["results"]}
     ref = boot["DINOv2 (one-class)"]["auroc"]
 
     fig, axes = plt.subplots(1, 3, figsize=(10.2, 3.7), sharey=True)
+    axes[0].set_ylim(0.70, 1.005)
+    last_labels = []
 
     for ax, name in zip(axes, ORDER, strict=True):
         curve = json.loads((ES / name / "curve.json").read_text())
@@ -66,16 +86,20 @@ def main() -> None:
         ax.plot(best_x, best_y, "o", ms=11, mfc=STEEL, mec="white", mew=1.6, zorder=5)
         ax.plot(last_x, last_y, "o", ms=9, mfc="white", mec=STEEL, mew=2, zorder=5)
 
+        # a best epoch near the left edge gets a left-aligned label that stays in the panel
+        early = best_x < 0.15 * len(xs)
         ax.annotate(f"best epoch: {best_y:.3f}", (best_x, best_y),
-                    textcoords="offset points", xytext=(0, 12), ha="center",
-                    fontsize=8, color=INK, fontweight="bold")
-        ax.annotate(f"last: {last_y:.3f}", (last_x, last_y),
-                    textcoords="offset points", xytext=(-4, -14), ha="right",
-                    fontsize=8, color=MUTED)
-        # label the literature line at the left edge (best/last markers sit
-        # on the curve, right/interior, so this never collides with them)
-        ax.text(1.0, lit - 0.006, f"reported: {lit:.3f}",
-                ha="left", va="top", fontsize=7.5, color=MUTED, style="italic")
+                    textcoords="offset points", xytext=(-6 if early else 0, 12),
+                    ha="left" if early else "center", fontsize=8, color=INK, fontweight="bold")
+        last_labels.append((ax, f"last: {last_y:.3f}", (last_x, last_y), xs, ys))
+        # label the literature line on the side away from the red line: below it at the
+        # left edge when it lies under the red line, above it at the right edge otherwise
+        if lit < ref:
+            ax.text(1.0, lit - 0.006, f"reported: {lit:.3f}",
+                    ha="left", va="top", fontsize=7.5, color=MUTED, style="italic")
+        else:
+            ax.text(len(xs), lit + 0.004, f"reported: {lit:.3f}",
+                    ha="right", va="bottom", fontsize=7.5, color=MUTED, style="italic")
 
         ax.set_title(TITLE[name], fontsize=11, color=INK, pad=8)
         ax.set_xlabel("epoch", fontsize=9)
@@ -89,7 +113,6 @@ def main() -> None:
         ax.tick_params(length=0, labelsize=8)
 
     axes[0].set_ylabel("Image AUROC (test)", fontsize=9.5)
-    axes[0].set_ylim(0.70, 1.005)
 
     handles = [
         Line2D([0], [0], color=STEEL, lw=1.7, marker="o", ms=4, mfc=STEEL,
@@ -107,6 +130,8 @@ def main() -> None:
                fontsize=8, bbox_to_anchor=(0.5, -0.06))
     # no title inside the figure: the journal puts the title in the caption
     fig.tight_layout(rect=(0, 0.02, 1, 0.98))
+    for args in last_labels:  # placed on the final layout, clear of the curves
+        place_clear(fig, *args)
     fig.savefig(OUT, dpi=300, bbox_inches="tight", facecolor="white")
     fig.savefig(OUT.with_suffix(".pdf"), bbox_inches="tight", facecolor="white")  # vector, journal artwork
     print(f"saved -> {OUT}")

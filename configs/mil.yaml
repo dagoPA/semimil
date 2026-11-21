@@ -19,6 +19,8 @@ data:
   test_normal_dir: "Anomaly_test/normal_img"
   test_abnormal_dir: "Anomaly_test/abnormal_img"
   test_mask_dir: "Anomaly_test/abnormal_mask"
+  syn_test_pos_glob: "Inpainting_test/*_anomaly.jpg"    # held-out synthetic test
+  syn_test_neg_glob: "Inpainting_test/*_original.jpg"
 
 model:                # feature extractor (shared with the one-class detector)
   type: dinov2        # cnn | dinov2

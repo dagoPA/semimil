@@ -1,0 +1,50 @@
+# One-class detectors of Appendix B under the protocol of the main text
+# (scripts/run_appendix_oneclass.py, no CLI args). Every memory bank is drawn as in
+# scripts/run_tiled.py (scale g1_518): seeds 0-2, 1,000 random images from the training
+# normals that are not among the 200 calibration images, 256 random tokens per image,
+# then 100,000 tokens at random. The DINOv2 run therefore reproduces the baseline
+# detector of the main text, up to the floating-point nondeterminism of the GPU.
+
+seed: 42                  # fixes the calibration set (same as run_tiled.py)
+seeds: [0, 1, 2]          # memory-bank sampling seeds
+batch_size: 32
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  syn_test_pos_glob: "Inpainting_test/*_anomaly.jpg"
+  syn_test_neg_glob: "Inpainting_test/*_original.jpg"
+
+memory:
+  n_images: 1000
+  patches_per_image: 256
+  coreset_size: 100000
+
+calibration:
+  n_images: 200
+
+dinov2: &dinov2 {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m}
+
+# name, extractor, input size; optional n_images; synthetic: also score Inpainting_test
+runs:
+  - {name: dinov2, model: *dinov2, input_size: 518, synthetic: true}
+  - {name: wrn50, model: {type: cnn, backbone: wide_resnet50_2, layers: [layer2, layer3]}, input_size: 512}
+  - {name: dinov2_domain, input_size: 518,
+     model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m,
+             weights: /autofs/space/crater_001/projects/micropath/semi/outputs/ssl/dinov2_domain.pth}}
+  # ablations of the DINOv2 detector (top-k pooling is computed from the dinov2 token maps)
+  - {name: dinov2_n200, model: *dinov2, input_size: 518, n_images: 200}
+  - {name: dinov2_n500, model: *dinov2, input_size: 518, n_images: 500}
+  - {name: dinov2_n2000, model: *dinov2, input_size: 518, n_images: 2000}
+  - {name: dinov2_r224, model: *dinov2, input_size: 224}
+  - {name: dinov2_r378, model: *dinov2, input_size: 378}
+
+# cost of the two extractors (training-cost table): memory bank and real test, first seed
+timing:
+  seed: 0
+  runs: [dinov2, wrn50]
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/appendix_oneclass
