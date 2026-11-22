@@ -8,8 +8,8 @@ the memory bank (real token crops, a rare normal structure outlined); (3) the di
 one map per representation, and a red path follows the defect token to its nearest
 memory-bank token and to its cell of the block-8 map; (4) the standardized scores are
 averaged and compared with the threshold at specificity 0.99. Bottom row: the memory bank
-is built from defect-free training images, and a schematic of why coverage matters (a
-random subsample leaves rare normal tokens uncovered, a greedy coreset keeps them).
+is built from defect-free training images, and a random subsample leaves rare normal
+tokens uncovered, whereas a greedy coreset of the same size keeps them.
 
 The token PCA needs one DINOv2 forward pass and is cached; everything else reads the
 outputs of scripts/run_bigbank.py. Argument-free: reads configs/method_overview.yaml.
@@ -286,7 +286,7 @@ def main() -> None:
         hx.spines[s_].set_visible(False)
     hx.spines["bottom"].set_color(MUTED), hx.spines["bottom"].set_linewidth(0.6)
 
-    # ---- bottom: building the memory, and why coverage matters
+    # ---- bottom: building the memory bank, and a random subsample against a greedy coreset
     panel(0.03, 4.26, 0.04, 0.88, "", "")
     bg.text(0.11, 0.76, "Building the memory bank once, from defect-free images (no labels)", ha="left",
             va="center", fontsize=6.6, fontweight="bold", color=INK)
@@ -304,7 +304,7 @@ def main() -> None:
     note(2.75, 0.43, "every token, or a greedy 1 % coreset", size=6, va="bottom")
 
     panel(4.32, 6.97, 0.04, 0.88, "", "")
-    bg.text(4.4, 0.76, "Why coverage matters (illustration)", ha="left", va="center", fontsize=6.6,
+    bg.text(4.4, 0.76, "Random subsample and greedy coreset", ha="left", va="center", fontsize=6.6,
             fontweight="bold", color=INK)
     rng = np.random.default_rng(1)
     common = rng.normal(0, 1, (400, 2)) * [1.0, 0.7]
