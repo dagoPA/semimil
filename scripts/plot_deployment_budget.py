@@ -98,7 +98,7 @@ def main() -> None:
     ax.set_xticklabels([str(k) for k in ks], fontsize=7.6)
     ax.set_xlabel("normal images in the memory bank (k)", color=INK, fontsize=9)
     ax.set_ylabel("Image AUROC", color=INK, fontsize=9)
-    ax.set_title("(a) Normal-image budget", color=INK, fontsize=9.8,
+    ax.set_title("(a) Number of normal images", color=INK, fontsize=9.8,
                  fontweight="bold", pad=8)
 
     # ---------------- (b, c) contamination ----------------------------------

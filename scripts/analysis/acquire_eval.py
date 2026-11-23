@@ -1,4 +1,4 @@
-"""Alarm-driven vs random acquisition of normals: learning curves and paired comparison.
+"""Score-driven vs random acquisition of normal images: learning curves and paired comparison.
 
 Reads outputs/acquire_alarm/ and outputs/acquire_random/ (scripts/run_acquire.py):
 results.json (per checkpoint metrics of the fused detector) and raw/<rep>_n<M>.npz
@@ -105,7 +105,7 @@ def main():
             ca = {m: metrics(fused([run / 'raw' / f'{r}_n{m}.npz' for r in REPS])) for m in sizes(run)}
             xs = sorted(ca)
             ax.plot(xs, [ca[m][k] for m in xs], marker='o', ms=4, color='#c53030', ls='-' if j == 0 else '--',
-                    label='alarm-driven, initial memory bank %d' % (j + 1))
+                    label='score-driven, initial memory bank %d' % (j + 1))
         xr = sorted(set.intersection(*[set(c) for c in seeds])) if seeds else []
         if xr:
             v = np.array([[c[m][k] for m in xr] for c in seeds])

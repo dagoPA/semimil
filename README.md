@@ -1,4 +1,4 @@
-# semimil — Rare Normal Structures Set the Decision Threshold
+# semimil — Rare Normal Structures Set the Threshold
 
 **Coverage-driven memory banks for detecting small defects in integrated-circuit
 microscopy.** (The first version of this work was titled *The Feature Extractor
@@ -11,8 +11,8 @@ Hospital and Harvard Medical School · `dpulido@mgh.harvard.edu`
 Oliverio Cruz-Mejía · National Autonomous University of Mexico (UNAM) ·
 `oliverio.cruz.mejia@comunidad.unam.mx`
 
-![Graphical abstract: rare normal structures set the decision threshold at 1 % false
-alarms, and small defects fall below it; the detector compares two blocks of a frozen
+![Graphical abstract: rare normal structures set the threshold at a 1 % false positive
+rate, and small defects fall below it; the detector compares two blocks of a frozen
 DINOv2 with a memory bank of every normal token and raises sensitivity at specificity
 0.99 from 0.79 to 0.94 on MIIC, and from 0.52 to 0.84 on the smallest
 defects](docs/graphical_abstract.png)
@@ -82,7 +82,7 @@ unchanged to MVTec AD** (mean image AUROC 0.974 over 15 categories). Two
 deployment questions are then settled empirically: **eight normal images** already
 suffice to beat every baseline trained on all 23,888 of them, and **split
 conformal** turns normal-only scores into a threshold that catches 68 % of real
-defects at a guaranteed 1 % false-alarm rate, without a single label. By avoiding
+defects at a guaranteed 1 % false positive rate, without a single label. By avoiding
 labels, the approach supports deployable, low-waste inspection (UN SDGs 9 and 12).
 
 ## Key results
@@ -156,7 +156,7 @@ into evaluation).
 calibration score carries a finite-sample, distribution-free guarantee
 `P(score > τ) ≤ α`:
 
-| Guaranteed false-alarm rate | Empirical | Real defects caught |
+| Guaranteed false positive rate | Empirical | Real defects caught |
 |---|---|---|
 | 1 % | 0.0013 | **68 %** |
 | 5 % | 0.0113 | **84 %** |
@@ -248,7 +248,7 @@ All are publicly available; see the paper for licensing and access.
 
 ```bibtex
 @article{pulido2025icmil,
-  title   = {Rare Normal Structures Set the Decision Threshold: Coverage-Driven
+  title   = {Rare Normal Structures Set the Threshold: Coverage-Driven
              Memory Banks for Detecting Small Defects in Integrated-Circuit Microscopy},
   author  = {Pulido Arias, Dagoberto and Cruz-Mej{\'i}a, Oliverio},
   journal = {Submitted},

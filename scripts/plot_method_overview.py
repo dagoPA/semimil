@@ -180,8 +180,8 @@ def main() -> None:
     panel(0.03, 0.98, Y0, Y1, "", "Test image")
     panel(1.04, 2.74, Y0, Y1, "1", "Encode with frozen DINOv2")
     panel(2.80, 4.26, Y0, Y1, "2", "Memory-bank search")
-    panel(4.32, 5.33, Y0, Y1, "3", "Distance maps")
-    panel(5.39, 6.97, Y0, Y1, "4", "Image score")
+    panel(4.32, 5.33, Y0, Y1, "3", "Anomaly maps")
+    panel(5.39, 6.97, Y0, Y1, "4", "Anomaly score")
 
     # ---- test image
     picture(0.08, 1.62, 0.85, 0.85, gray, cmap="gray", vmin=0, vmax=255)
@@ -258,7 +258,7 @@ def main() -> None:
             bbox=dict(boxstyle="round,pad=0.15", fc=PANEL, ec="none"))
     note(4.825, 1.12, "each cell: distance of one\npatch to the memory bank", size=5.6)
 
-    # ---- 4. image score
+    # ---- 4. anomaly score
     node = (5.5, r1y - 0.12)
     ov.add_patch(Circle(node, 0.075, fc="#ffffff", ec=INK, lw=0.9, zorder=4))
     ov.text(*node, "+", ha="center", va="center", fontsize=8, zorder=5)

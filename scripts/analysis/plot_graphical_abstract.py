@@ -79,7 +79,7 @@ y0, x_lo, x_hi, v_lo, v_hi = 440, 40, 460, 16.6, 20.4   # baseline scores on a l
 X = lambda v: x_lo + (v - v_lo) / (v_hi - v_lo) * (x_hi - x_lo)
 a(f'<line x1="{x_lo}" y1="{y0}" x2="{x_hi}" y2="{y0}" stroke="#444" stroke-width="3"/>')
 a(f'<line x1="{X(17.6):.0f}" y1="{y0-40}" x2="{X(17.6):.0f}" y2="{y0+30}" stroke="#111" stroke-width="4" stroke-dasharray="9,6"/>')
-a(f'<text class="s" x="{X(17.6):.0f}" y="{y0-52}">decision threshold</text>')
+a(f'<text class="s" x="{X(17.6):.0f}" y="{y0-52}">threshold</text>')
 a(f'<circle cx="{X(19.7):.0f}" cy="{y0}" r="14" fill="{RED}"/>')
 a(f'<circle cx="{X(17.3):.0f}" cy="{y0}" r="14" fill="{GREEN}"/>')
 a(f'<text class="s" x="250" y="{y0+65}">baseline anomaly score</text>')

@@ -1,4 +1,4 @@
-"""Alarm-driven vs random acquisition on Texture-AD: paired analysis over tasks.
+"""Score-driven vs random acquisition on Texture-AD: paired analysis over tasks.
 
 Reads outputs/acquire_texturead/part_*/results.json (scripts/run_acquire_texturead.py).  A task
 is one (wafer subclass, photograph fold).  For every task, seed and memory size the difference
@@ -85,7 +85,7 @@ def main():
                        (axes[2], 2, 'Sensitivity at specificity 0.99')):
         for st, c, mk in (('alarm', '#c53030', 'o'), ('random', '#8c8c8c', 's')):
             ax.plot(100 * np.array(fr), A[st][:, :, k].mean(0), marker=mk, ms=4, color=c,
-                    label='alarm-driven' if st == 'alarm' else 'random')
+                    label='score-driven' if st == 'alarm' else 'random')
         ax.set_xlabel('memory bank (% of the normal pool)'); ax.set_title(lab, fontsize=10); ax.grid(alpha=0.3)
     axes[0].legend(fontsize=8, frameon=False)
     fig.tight_layout()
