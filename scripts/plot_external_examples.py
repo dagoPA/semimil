@@ -103,7 +103,7 @@ def main() -> None:
 
     out = Path(cfg["output"])
     out.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out, dpi=300)
+    fig.savefig(out, dpi=500)  # about 650 dpi at the text width of the preprint
     print(f"wrote {out}")
 
 

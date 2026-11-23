@@ -41,19 +41,20 @@ def contour(mask):
     return m & ~inner
 
 
-def tile(path, label, mask_path=None, color=(255, 255, 255)):
-    im = Image.open(path).convert('L').resize((T, T), Image.BILINEAR).convert('RGB')
+def tile(path, label, mask_path=None, color=(255, 255, 255), size=T):
+    k = size / T  # label, bar and contour scale with the tile so every size looks the same
+    im = Image.open(path).convert('L').resize((size, size), Image.BILINEAR).convert('RGB')
     if mask_path:
-        m = np.asarray(Image.open(mask_path).convert('L').resize((T, T), Image.NEAREST)) > 127
+        m = np.asarray(Image.open(mask_path).convert('L').resize((size, size), Image.NEAREST)) > 127
         e = contour(m)
-        for _ in range(2):  # thicken the contour so tiny defects stay visible
+        for _ in range(round(2 * k)):  # thicken the contour so tiny defects stay visible
             e = e | np.roll(e, 1, 0) | np.roll(e, 1, 1)
         a = np.asarray(im).copy()
         a[e] = (0, 220, 0)
         im = Image.fromarray(a)
     d = ImageDraw.Draw(im)
-    d.rectangle((0, 0, T, 22), fill=(0, 0, 0))
-    d.text((5, 3), label, font=ImageFont.truetype(FONT, 14), fill=color)
+    d.rectangle((0, 0, size, round(22 * k)), fill=(0, 0, 0))
+    d.text((round(5 * k), round(3 * k)), label, font=ImageFont.truetype(FONT, round(14 * k)), fill=color)
     return im
 
 
@@ -83,34 +84,35 @@ def main():
         fig.paste(tile(norm[i], 'normal image, score %.1f' % base[i]), (PAD + j * (T + PAD), HEAD))
     y0 = HEAD + T + PAD
     d.text((PAD, y0 + 6), '(b) Small defects (<0.1%% of the image) missed by the baseline detector; '
-           'green: ground truth. %d of %d are caught by the proposed detector'
+           'green: ground truth. %d of %d are detected by the proposed detector'
            % (len(caught), len(missed)), font=bold, fill='black')
     for j, i in enumerate(pick):
         ok = prop[nn + i] >= thr_p
-        lab = '%.3f%% area: %s' % (areas[i], 'caught' if ok else 'still missed')
+        lab = '%.3f%% area: %s' % (areas[i], 'detected' if ok else 'still missed')
         fig.paste(tile(abn[i], lab, masks[i], (120, 255, 120) if ok else (255, 160, 160)),
                   (PAD + j * (T + PAD), y0 + HEAD))
     fig.save(OUTS[0])
 
-    # compact single-column teaser for the manuscript (first page): 4 x 2 tiles
-    n, t, pad, head = 4, 300, 10, 44
-    tf = ImageFont.truetype(BOLD, 22)
+    # compact single-column teaser for the manuscript (first page): 4 x 2 tiles, about
+    # 500 dpi at the text width of the preprint (5.4 in)
+    n, t, pad, head = 4, 656, 22, 96
+    tf = ImageFont.truetype(BOLD, 48)
     W2, H2 = n * (t + pad) + pad, 2 * (head + t + pad) + pad
     fig2 = Image.new('RGB', (W2, H2), 'white')
     d2 = ImageDraw.Draw(fig2)
-    d2.text((pad, 10), '(a) Normal images that set the threshold', font=tf, fill='black')
+    d2.text((pad, 22), '(a) Normal images that set the threshold', font=tf, fill='black')
     for j, i in enumerate(top[:n]):
-        im = tile(norm[i], 'normal, %.1f > %.1f' % (base[i], thr_b))
-        fig2.paste(im.resize((t, t), Image.BILINEAR), (pad + j * (t + pad), head))
+        im = tile(norm[i], 'normal, %.1f > %.1f' % (base[i], thr_b), size=t)
+        fig2.paste(im, (pad + j * (t + pad), head))
     y1 = head + t + pad
-    d2.text((pad, y1 + 10), '(b) Small defects missed by the baseline', font=tf, fill='black')
+    d2.text((pad, y1 + 22), '(b) Small defects missed by the baseline', font=tf, fill='black')
     still = [i for i in missed if i not in caught]
     show = caught[:n - 1] + still[:1]  # not only successes: one defect is still missed
     for j, i in enumerate(show):
         ok = prop[nn + i] >= thr_p
-        im = tile(abn[i], '%.3f%%: %s' % (areas[i], 'caught' if ok else 'missed'), masks[i],
-                  (120, 255, 120) if ok else (255, 160, 160))
-        fig2.paste(im.resize((t, t), Image.BILINEAR), (pad + j * (t + pad), y1 + head))
+        im = tile(abn[i], '%.3f%%: %s' % (areas[i], 'detected' if ok else 'missed'), masks[i],
+                  (120, 255, 120) if ok else (255, 160, 160), size=t)
+        fig2.paste(im, (pad + j * (t + pad), y1 + head))
     fig2.save(OUTS[1])
     print('threshold baseline %.2f, missed small %d, caught by proposed %d' % (thr_b, len(missed), len(caught)))
 
