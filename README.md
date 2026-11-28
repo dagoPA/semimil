@@ -47,6 +47,7 @@ the normal test scores):
 | INP-Former (CVPR 2025), 3 seeds | 0.982 | 0.944 | 0.876 | 0.682 |
 | AnomalyDINO (WACV 2025), 1,000 normals | 0.934 | 0.848 | 0.773 | 0.538 |
 | GLASS (ECCV 2024), 3 seeds | 0.928 | 0.769 | 0.670 | 0.288 |
+| MuSc (ICLR 2024), zero-shot on the test batch | 0.897 | 0.769 | 0.681 | 0.341 |
 
 The AUPRC gain over Dinomaly, INP-Former and SubspaceAD is significant (paired
 bootstrap, p = 0.011–0.023); the AUROC and recall gains are not, with 116 defects.
