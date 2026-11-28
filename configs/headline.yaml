@@ -26,5 +26,6 @@ methods:
   - {label: INP-Former, kind: sota, path: inp_former/single_ep200_n1000_r448}
   - {label: AnomalyDINO, kind: sota, path: anomalydino/1000shot}
   - {label: GLASS, kind: sota, path: glass/custom_ep640_n1000}
+  - {label: MuSc, kind: sota, path: musc/zeroshot_vitl14_336_r518}
 
 output: /autofs/space/crater_001/projects/micropath/semi/outputs/report/latex/figs/headline.pdf

@@ -17,7 +17,8 @@ def met(s):
     n, a = s[:nn], s[nn:]; thr = np.percentile(n, 99)
     return np.array([auroc(y, s), ap(y, s), (a >= thr).mean(), (a[areas < .1] >= thr).mean()])
 meth = {'Dinomaly': 'dinomaly/sep_it5000_r448', 'INP-Former': 'inp_former/single_ep200_n1000_r448', 'SubspaceAD (all normals)': 'subspacead/fullshot_all',
-        'AnomalyDINO (1000)': 'anomalydino/1000shot', 'GLASS': 'glass/custom_ep640_n1000'}
+        'AnomalyDINO (1000)': 'anomalydino/1000shot', 'GLASS': 'glass/custom_ep640_n1000',
+        'MuSc (zero-shot)': 'musc/zeroshot_vitl14_336_r518'}
 print('%-26s %5s %14s %14s %14s %14s' % ('method', 'seeds', 'AUROC', 'AUPRC', 'R@1%FPR', 'R small'))
 print('%-26s %5s %14.3f %14.3f %14.3f %14.3f' % ('Ours (L8 + L10 pooled)', '-', *met(ours)))
 rng = np.random.RandomState(0); B = 2000
@@ -28,7 +29,7 @@ for m, p in meth.items():
     ms = np.array([met(load(f)) for f in fs])
     cell = ['%.3f+-%.3f' % (a, b) for a, b in zip(ms.mean(0), ms.std(0))]
     print('%-26s %5d %14s %14s %14s %14s' % (m, len(fs), *cell))
-    if m in ('Dinomaly', 'INP-Former', 'SubspaceAD (all normals)'):
+    if m in ('Dinomaly', 'INP-Former', 'SubspaceAD (all normals)', 'MuSc (zero-shot)'):
         other = np.mean([ (lambda s: (s - s[:nn].mean()) / s[:nn].std())(load(f)) for f in fs], 0)  # seed-averaged, rank-preserving per seed
         o1 = load(fs[0])
         diffs = []

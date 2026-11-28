@@ -1,0 +1,21 @@
+# Robustness to image noise (scripts/plot_noise.py, no CLI args): numbers and figure from
+# the runs of scripts/run_noise.py; sigma = 0 is the clean test of the main text.
+spec: 0.99
+small_area_pct: 0.1          # small defects: below 0.1 % of the image
+bootstrap: 2000
+seed: 0
+sigmas: [5, 10, 20]
+crop: 128                    # pixels of the example crop around the small defect
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+  test_mask_dir: "Anomaly_test/abnormal_mask"
+
+outputs: /autofs/space/crater_001/projects/micropath/semi/outputs
+proposed_clean: [bigbank_L8, bigbank_L10_pool3]   # outputs/<run>/raw/n23688.npz
+baseline_clean: "tiled/raw/g1_518_s{}.npz"        # one file per memory-bank seed
+noise_dir: /autofs/space/crater_001/projects/micropath/semi/outputs/noise
+
+output: /autofs/space/crater_001/projects/micropath/semi/outputs/report/latex/figs/noise.pdf

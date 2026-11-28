@@ -17,5 +17,6 @@ case "${1:-all}" in
   glass|all)      mk glass torch==2.1.2+cu121 torchvision==0.16.2+cu121 timm==0.9.12 imgaug==0.4.0 click==8.1.7 tensorboard==2.15.1 openpyxl==3.0.10 \
                      numpy==1.26.3 scipy==1.11.4 scikit-learn==1.4.0 scikit-image==0.22.0 opencv-python-headless==4.10.0.84 pandas==1.5.3 matplotlib==3.8.2 tqdm pillow==10.2.0 ;;&
   subspacead|all) mk subspacead torch==2.5.1+cu121 torchvision==0.20.1+cu121 "transformers>=4.48,<5" kornia $COMMON ;;&
-  anomalydino|all) mk anomalydino torch==2.5.1+cu121 torchvision==0.20.1+cu121 faiss-gpu-cu12 tifffile $COMMON ;;
+  anomalydino|all) mk anomalydino torch==2.5.1+cu121 torchvision==0.20.1+cu121 faiss-gpu-cu12 tifffile $COMMON ;;&
+  musc|all)       mk musc torch==2.5.1+cu121 torchvision==0.20.1+cu121 timm==0.9.12 ftfy==6.1.3 regex huggingface_hub openpyxl==3.1.2 $COMMON ;;
 esac

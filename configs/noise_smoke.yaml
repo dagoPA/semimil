@@ -1,0 +1,48 @@
+# Robustness to image noise on MIIC (scripts/run_noise.py, no CLI args). Gaussian noise of
+# standard deviation sigma gray levels is added to every 512x512 image; each sigma is scored
+# with the clean memory bank and with a memory bank rebuilt from images at the same sigma.
+seed: 42                  # calibration set (same as run_tiled / run_bigbank)
+sigmas: [5, 10, 20]
+batch_size: 32
+q_chunk: 4096             # exhaustive search: queries per matmul block
+b_chunk: 150000           # exhaustive search: memory-bank tokens per block
+check_images: 4
+
+data:
+  raw_dir: /autofs/space/crater_001/projects/micropath/semi/MIIC
+  train_normal_glob: "Anomaly_train/train_normal_*.jpg"
+  test_normal_dir: "Anomaly_test/normal_img"
+  test_abnormal_dir: "Anomaly_test/abnormal_img"
+
+calibration:
+  n_images: 200
+
+memory:                   # baseline detector, as in run_tiled.py
+  n_images: 1000
+  patches_per_image: 256
+  coreset_size: 100000
+
+runs:
+  - name: L8              # proposed detector, intermediate block (configs/bigbank_L8.yaml)
+    bank: exhaustive
+    bank_seed: 0
+    input_size: 518
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [7], pool: 0}
+    check_against: /autofs/space/crater_001/projects/micropath/semi/outputs/bigbank_L8/raw/n23688.npz
+  - name: L10_pool3       # proposed detector, pooled deeper block (configs/bigbank_L10_pool3.yaml)
+    bank: exhaustive
+    bank_seed: 0
+    input_size: 518
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m, layers: [9], pool: 3}
+    check_against: /autofs/space/crater_001/projects/micropath/semi/outputs/bigbank_L10_pool3/raw/n23688.npz
+  - name: baseline        # baseline detector (run_tiled.py, scale g1_518)
+    bank: sampled
+    seeds: [0, 1, 2]
+    input_size: 518
+    model: {type: dinov2, dino_name: vit_small_patch14_reg4_dinov2.lvd142m}
+    check_against: /autofs/space/crater_001/projects/micropath/semi/outputs/tiled/raw/g1_518_s{}.npz
+
+output:
+  dir: /autofs/space/crater_001/projects/micropath/semi/outputs/noise_smoke
+limit_test: 4
+limit_pool: 60

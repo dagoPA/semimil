@@ -224,9 +224,10 @@ Each result maps to one script + one config (`uv run python scripts/<x>.py`):
 | Periodic self-reference (negative) | `run_selfref.py` | `selfref.yaml` |
 | Layer and pooling study | `run_tiled.py` | `layers_*.yaml` |
 | **Exhaustive memory bank** | `run_bigbank.py` | `bigbank*.yaml` |
+| **Robustness to image noise** (Gaussian noise, clean or rebuilt memory bank) | `run_noise.py`, `plot_noise.py` | `noise.yaml`, `noise_plot.yaml` |
 | **Proposed detector, final metrics** | `analysis/final_metrics.py` | — |
 | Nested selection | `analysis/fuse_nested_layers.py`, `analysis/fuse_nested_fullbank.py` | — |
-| Recent methods + paired bootstrap | `sota/` wrappers, `analysis/compare_sota.py` | — |
+| Recent methods (Dinomaly, INP-Former, SubspaceAD, AnomalyDINO, GLASS, MuSc) + paired bootstrap | `sota/` wrappers, `analysis/compare_sota.py` | — |
 | **External datasets** (manifests, evaluation) | `prepare_external.py`, `run_external.py` | `external.yaml`, `external_full.yaml` |
 | Threshold diagnosis figure, graphical abstract | `analysis/plot_threshold_diagnosis.py`, `analysis/plot_graphical_abstract.py` | — |
 | Figures | `plot_dataset_overview.py`, `plot_sankey.py`, `plot_comparison.py`, `plot_ranking.py`, `plot_epochsel.py`, `plot_deployment_budget.py` | — |

@@ -192,7 +192,8 @@ METHODS = [('Proposed', proposed), ('Baseline (100k bank)', baseline),
            ('SubspaceAD (all normals)', lambda: sota('subspacead/fullshot_all')),
            ('INP-Former', lambda: sota('inp_former/single_ep200_n1000_r448')),
            ('AnomalyDINO (1000 normals)', lambda: sota('anomalydino/1000shot')),
-           ('GLASS', lambda: sota('glass/custom_ep640_n1000'))]
+           ('GLASS', lambda: sota('glass/custom_ep640_n1000')),
+           ('MuSc (zero-shot)', lambda: sota('musc/zeroshot_vitl14_336_r518'))]
 
 
 def main():
