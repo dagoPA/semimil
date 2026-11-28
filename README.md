@@ -57,6 +57,11 @@ AUROC 0.984 → 0.996 and PRO 0.888 → 0.977; Texture-AD Wafer (optical) image 
 released Texture-AD split shares source photographs between training and test
 (re-split by photograph), and Carinthia-S borders differ by class (cropped).
 
+**Image noise** (Gaussian, σ in gray levels on the 8-bit images; `run_noise.py`): with the
+memory bank rebuilt from images at the same σ, the proposed detector keeps recall @1 % FP
+at 0.931 and small-defect recall at 0.818 at σ = 20, against 0.661 and 0.295 for the
+baseline; with the clean memory bank it drops to 0.724 and 0.364 at σ = 20.
+
 **What did not help:** finer tokens (tiles or upsampling), patch-level domain
 adaptation (masked-token distillation), and periodic self-reference.
 

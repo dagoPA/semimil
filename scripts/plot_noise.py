@@ -162,7 +162,7 @@ def main() -> None:
                 ys = [rows[s][key][col] for s in xs]
                 ax.plot(xs, ys, ls, color=colr, lw=1.6 if key == "proposed" else 1.2,
                         marker="o", ms=3.5, mec="white", mew=0.6,
-                        label=f"{lab}, {'clean' if setting == 'clean_bank' else 'noisy'} memory bank")
+                        label=f"{lab}, " + ("clean memory bank" if setting == "clean_bank" else "memory bank from noisy images"))
         ax.set_title(titles[j], fontsize=7.6, color=INK, loc="left", pad=4)
         ax.set_xticks(sig)
         ax.set_xlabel("Noise $\\sigma$ (gray levels)", color=INK)
